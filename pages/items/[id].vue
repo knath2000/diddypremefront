@@ -92,8 +92,9 @@ const route = useRoute();
 const config = useRuntimeConfig();
 const itemId = route.params.id;
 
+// Fetch item details
 const { data: itemResponse, pending } = await useFetch(() => `${config.public.apiBase}/items/${itemId}`, {
-  server: false,
+  // server: false,
 });
 
 // Fetch StockX snapshot (latest market data)

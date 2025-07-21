@@ -237,7 +237,6 @@ const config = useRuntimeConfig()
 // Fetch featured items
 const { data: featuredItemsResponse, pending } = await useFetch(() => `${config.public.apiBase}/items?limit=8`, {
   lazy: true,
-  server: false,            // skip during SSR in dev so page renders instantly
   timeout: 15000,
   onRequestError: () => { pending.value = false }
 })
