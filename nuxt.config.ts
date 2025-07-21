@@ -8,6 +8,7 @@ export default defineNuxtConfig({
   // Modules for Supreme Price Tracker
   modules: [
     '@pinia/nuxt',
+    '@vueuse/motion/nuxt',
   ],
 
   // Vite configuration

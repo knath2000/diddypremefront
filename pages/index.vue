@@ -1,51 +1,31 @@
 <template>
   <div>
     <!-- Hero Section -->
-    <section class="bg-gradient-to-br from-red-600 to-red-800 text-white py-16 lg:py-24">
-      <div class="container mx-auto px-4 text-center">
-        <h1 class="text-4xl lg:text-6xl font-bold mb-6 text-balance">
-          Track Supreme Prices Like a Pro
-        </h1>
-        <p class="text-xl lg:text-2xl mb-8 text-red-100 max-w-3xl mx-auto text-balance">
-          Real-time price monitoring across StockX, GOAT, and Grailed. 
-          Get alerts, historical data, and never overpay again.
-        </p>
-        
-        <!-- Hero CTA -->
-        <div class="flex flex-col sm:flex-row gap-4 justify-center items-center mb-12">
-          <button 
-            @click="scrollToItems"
-            class="px-8 py-4 bg-white text-red-600 font-semibold rounded-lg hover:bg-gray-100 transition-colors duration-200 text-lg"
-          >
-            Browse Items
-          </button>
-          <button 
-            @click="$router.push('/trending')"
-            class="px-8 py-4 border-2 border-white text-white font-semibold rounded-lg hover:bg-white hover:text-red-600 transition-colors duration-200 text-lg"
-          >
-            View Trending
-          </button>
-        </div>
+    <section class="pt-20 pb-28 relative overflow-hidden">
+      <div class="absolute -top-40 -left-40 w-[480px] h-[480px] rounded-full bg-gradient-to-br from-pink-500/30 to-purple-600/30 blur-3xl animate-float" />
+      <div class="absolute -bottom-40 right-0 w-[420px] h-[420px] rounded-full bg-gradient-to-br from-blue-500/30 to-green-400/30 blur-3xl animate-float" />
 
-        <!-- Stats -->
-        <div class="grid grid-cols-2 lg:grid-cols-4 gap-6 max-w-4xl mx-auto">
-          <div class="text-center">
-            <div class="text-3xl lg:text-4xl font-bold">10K+</div>
-            <div class="text-red-200 text-sm lg:text-base">Items Tracked</div>
+      <div class="container mx-auto px-4 text-center">
+        <GlassCard class="mx-auto max-w-4xl">
+          <h1 class="text-4xl lg:text-6xl font-extrabold mb-6 bg-clip-text text-transparent" style="background-image: var(--gradient-primary)">
+            Supreme Price Tracker
+          </h1>
+          <p class="text-xl lg:text-2xl mb-8 text-gray-200 max-w-3xl mx-auto">
+            Real-time pricing across StockX, GOAT & Grailed. Earn hype points while you hunt deals.
+          </p>
+
+          <div class="flex flex-col sm:flex-row gap-4 justify-center items-center mb-8">
+            <GlassButton @click="scrollToItems">Browse Items</GlassButton>
+            <GlassButton variant="secondary" @click="$router.push('/trending')">View Trending</GlassButton>
           </div>
-          <div class="text-center">
-            <div class="text-3xl lg:text-4xl font-bold">3</div>
-            <div class="text-red-200 text-sm lg:text-base">Platforms</div>
+
+          <div class="grid grid-cols-2 lg:grid-cols-4 gap-6">
+            <StatCard title="Items" value="10K+" />
+            <StatCard title="Platforms" value="3" />
+            <StatCard title="Updates" value="15m" />
+            <StatCard title="Uptime" value="99.9%" />
           </div>
-          <div class="text-center">
-            <div class="text-3xl lg:text-4xl font-bold">15min</div>
-            <div class="text-red-200 text-sm lg:text-base">Update Frequency</div>
-          </div>
-          <div class="text-center">
-            <div class="text-3xl lg:text-4xl font-bold">99.9%</div>
-            <div class="text-red-200 text-sm lg:text-base">Uptime</div>
-          </div>
-        </div>
+        </GlassCard>
       </div>
     </section>
 
@@ -53,29 +33,29 @@
     <section class="py-12 -mt-8 relative z-10">
       <div class="container mx-auto px-4">
         <div class="max-w-2xl mx-auto">
-          <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-6">
-            <h2 class="text-2xl font-bold text-center mb-6 text-gray-900 dark:text-white">
+          <GlassCard class="p-8">
+            <h2 class="text-2xl font-bold text-center mb-6 text-gray-100">
               Search Supreme Items
             </h2>
             <div class="relative">
               <input
                 v-model="searchQuery"
                 type="text"
-                placeholder="Search for hoodies, t-shirts, accessories..."
-                class="w-full pl-12 pr-4 py-4 text-lg border border-gray-300 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-red-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                placeholder="hoodies, tees, accessories..."
+                class="w-full pl-12 pr-4 py-4 text-lg rounded-xl focus:ring-2 focus:ring-accent-green bg-glass-dark text-white placeholder-gray-300 border border-white/20 backdrop-blur-sm"
                 @keyup.enter="handleSearch"
               >
-              <svg class="absolute left-4 top-1/2 transform -translate-y-1/2 h-6 w-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg class="absolute left-4 top-1/2 transform -translate-y-1/2 h-6 w-6 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
               </svg>
-              <button 
+              <GlassButton 
                 @click="handleSearch"
-                class="absolute right-2 top-1/2 transform -translate-y-1/2 px-6 py-2 bg-red-600 text-white font-semibold rounded-lg hover:bg-red-700 transition-colors duration-200"
+                class="absolute right-2 top-1/2 -translate-y-1/2"
               >
                 Search
-              </button>
+              </GlassButton>
             </div>
-          </div>
+          </GlassCard>
         </div>
       </div>
     </section>

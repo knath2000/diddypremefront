@@ -1,112 +1,53 @@
 <template>
-  <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm hover:shadow-md transition-shadow duration-200 overflow-hidden border border-gray-200 dark:border-gray-700">
+  <div 
+    v-motion
+    :initial="{ opacity: 0, y: 50 }"
+    :enter="{ opacity: 1, y: 0, transition: { duration: 500 } }"
+    class="bg-blur rounded-2xl overflow-hidden group transform hover:-translate-y-2 transition-transform duration-300"
+  >
     <!-- Item Image -->
-    <div class="aspect-square bg-gray-100 dark:bg-gray-700 relative overflow-hidden">
+    <div class="aspect-square relative overflow-hidden">
       <img 
         v-if="item.image_url || item.imageUrl" 
         :src="item.image_url || item.imageUrl" 
         :alt="item.title"
-        class="w-full h-full object-cover hover:scale-105 transition-transform duration-200"
+        class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300 ease-in-out"
         loading="lazy"
       >
-      <div v-else class="w-full h-full flex items-center justify-center text-gray-400 text-4xl">
+      <div v-else class="w-full h-full flex items-center justify-center text-gray-400 text-4xl bg-gray-500/10">
         📦
       </div>
       
-      <!-- Supreme Logo Overlay -->
-      <div class="absolute top-2 left-2">
-        <div class="bg-red-600 text-white px-2 py-1 rounded text-xs font-bold">
-          SUPREME
-        </div>
+      <!-- Gradient overlay for text protection -->
+      <div class="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
+
+      <!-- Best Price Badge -->
+      <div v-if="bestPrice" class="absolute top-3 right-3 bg-accent-magenta text-white px-3 py-1.5 rounded-full text-sm font-bold shadow-lg">
+        ${{ bestPrice.price.toLocaleString() }}
       </div>
-      
-      <!-- Watchlist Heart (TODO: implement functionality) -->
-      <button 
-        class="absolute top-2 right-2 p-2 bg-white/80 dark:bg-gray-800/80 rounded-full hover:bg-white dark:hover:bg-gray-800 transition-colors"
-        aria-label="Add to watchlist"
-      >
-        <svg class="h-4 w-4 text-gray-600 dark:text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
-        </svg>
-      </button>
     </div>
 
     <!-- Item Content -->
-    <div class="p-4">
+    <div class="p-4 relative">
       <!-- Item Name -->
-      <h3 class="font-semibold text-gray-900 dark:text-white mb-2 line-clamp-2">
+      <h3 class="font-bold text-gray-900 dark:text-white mb-2 pr-10 line-clamp-2 leading-tight">
         {{ item.title }}
       </h3>
       
-      <!-- Item Details -->
-      <p v-if="item.description" class="text-sm text-gray-500 dark:text-gray-400 mb-3 line-clamp-3">
-        {{ item.description }}
+      <!-- Season Tag -->
+      <p v-if="item.season" class="text-xs font-medium text-gray-500 dark:text-gray-400 mb-4">
+        {{ item.season }}
       </p>
-      <!-- Item Details -->
-      <div class="flex items-center justify-between mb-3">
-        <span class="text-sm text-gray-600 dark:text-gray-400">
-          {{ item.brand || 'Supreme' }}
-        </span>
-        <span v-if="item.season" class="text-xs bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 px-2 py-1 rounded">
-          {{ item.season }}
-        </span>
-      </div>
 
-      <!-- Platform Prices -->
-      <div class="space-y-2 mb-4">
-        <div v-if="stockxPrice" class="flex items-center justify-between">
-          <span class="inline-block px-2 py-1 text-xs font-semibold rounded border platform-stockx">StockX</span>
-          <span class="font-semibold text-gray-900 dark:text-white">
-            ${{ stockxPrice.toLocaleString() }}
-          </span>
-        </div>
-        
-        <div v-if="goatPrice" class="flex items-center justify-between">
-          <span class="inline-block px-2 py-1 text-xs font-semibold rounded border platform-goat">GOAT</span>
-          <span class="font-semibold text-gray-900 dark:text-white">
-            ${{ goatPrice.toLocaleString() }}
-          </span>
-        </div>
-        
-        <div v-if="grailedPrice" class="flex items-center justify-between">
-          <span class="inline-block px-2 py-1 text-xs font-semibold rounded border platform-grailed">Grailed</span>
-          <span class="font-semibold text-gray-900 dark:text-white">
-            ${{ grailedPrice.toLocaleString() }}
-          </span>
-        </div>
-      </div>
-
-      <!-- Best Price Highlight -->
-      <div v-if="bestPrice" class="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg p-3 mb-4">
-        <div class="flex items-center justify-between">
-          <span class="text-sm font-medium text-green-800 dark:text-green-300">
-            Best Price
-          </span>
-          <span class="font-bold text-green-900 dark:text-green-100">
-            ${{ bestPrice.price.toLocaleString() }}
-          </span>
-        </div>
-        <div class="text-xs text-green-700 dark:text-green-400 mt-1">
-          on {{ bestPrice.platform }}
-        </div>
-      </div>
-
-      <!-- Action Buttons -->
-      <div class="flex space-x-2">
-        <NuxtLink 
-          :to="`/items/${item.id}`"
-          class="flex-1 px-3 py-2 bg-red-600 text-white text-sm font-medium rounded-lg hover:bg-red-700 transition-colors text-center"
-        >
-          View Details
-        </NuxtLink>
-        <button 
-          @click="handleSetAlert"
-          class="px-3 py-2 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 text-sm font-medium rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
-          aria-label="Set price alert"
-        >
-          🔔
-        </button>
-      </div>
+      <!-- Action Button -->
+      <NuxtLink 
+        :to="`/items/${item.id}`"
+        class="absolute bottom-4 right-4 h-12 w-12 bg-supreme-red text-white rounded-full flex items-center justify-center transform group-hover:scale-110 group-hover:rotate-12 transition-all duration-300 ease-in-out shadow-lg hover:shadow-xl"
+      >
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+        </svg>
+      </NuxtLink>
     </div>
   </div>
 </template>

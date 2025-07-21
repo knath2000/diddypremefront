@@ -12,12 +12,15 @@
   "dependencies": {
     "@headlessui/vue": "^1.7.7",
     "@heroicons/vue": "^2.1.1",
-    "chart.js": "^4.4.1",
-    "vue-chartjs": "^5.3.2",
-    "chartjs-adapter-date-fns": "^3.0.0",
-    "pinia": "^2.3.0",
     "@pinia/nuxt": "^0.5.5",
-    "nuxt": "latest"
+    "@vueuse/motion": "^2.2.3",
+    "canvas-confetti": "^1.9.3",
+    "chart.js": "^4.4.1",
+    "chartjs-adapter-date-fns": "^3.0.0",
+    "gsap": "^3.13.0",
+    "nuxt": "latest",
+    "pinia": "^2.3.0",
+    "vue-chartjs": "^5.3.2"
   },
   "devDependencies": {
     "@nuxt/devtools": "^2.6.2",
