@@ -7,7 +7,6 @@
 <script setup lang="ts">
 import { onMounted, ref, watch } from 'vue';
 import { Chart, LineController, CategoryScale, LinearScale, PointElement, LineElement, Tooltip, TimeScale } from 'chart.js';
-import 'chartjs-adapter-date-fns';
 
 Chart.register(LineController, CategoryScale, LinearScale, PointElement, LineElement, Tooltip, TimeScale);
 
@@ -19,6 +18,8 @@ const canvas = ref<HTMLCanvasElement | null>(null);
 let chart: Chart | null = null;
 
 async function loadData() {
+  // Load date-fns adapter at runtime (avoids SSR import error)
+  await import('chartjs-adapter-date-fns');
   const url = `${runtime.public.apiBase}/items/${props.itemId}/stockx/history?type=lastSale&days=30`;
   const res = await $fetch(url);
   const data = res.data as any[];
