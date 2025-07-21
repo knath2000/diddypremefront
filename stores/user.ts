@@ -15,7 +15,8 @@ export const useUserStore = defineStore('user', {
       this.xp += amount
       // Level up logic
       while (this.xp >= this.nextLevelXp) {
-        this.xp -= this.nextLevelXp
+        const requiredXp = this.nextLevelXp
+        this.xp -= requiredXp
         this.level++
         this.$notifyLevelUp()
       }
