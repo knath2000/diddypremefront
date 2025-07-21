@@ -57,6 +57,14 @@
           </div>
         </div>
 
+        <!-- XP Counter -->
+        <GlassButton
+          class="hidden md:inline-flex bg-blur shadow-inner px-4 py-2 mr-4 cursor-pointer animate-glow-pulse"
+          @click="user.addXp(10)"
+        >
+          💎 {{ user.xp }} XP
+        </GlassButton>
+
         <!-- User Actions -->
         <div class="flex items-center space-x-4">
           <!-- Dark Mode Toggle -->
@@ -137,12 +145,15 @@
 </template>
 
 <script setup>
+import { useUserStore } from '~/stores/user'
 const router = useRouter()
 
 // Reactive state
 const searchQuery = ref('')
 const mobileMenuOpen = ref(false)
 const isDark = ref(false)
+// User store for XP/levels
+const user = useUserStore()
 
 // Initialize dark mode state from localStorage on client side
 onMounted(() => {
