@@ -5,6 +5,7 @@ export const useUserStore = defineStore('user', {
     xp: 0,
     level: 1,
     achievements: [] as string[],
+    levelJustIncreased: false,
   }),
   getters: {
     nextLevelXp: (state) => state.level * 100,
@@ -18,7 +19,16 @@ export const useUserStore = defineStore('user', {
         const requiredXp = this.nextLevelXp
         this.xp -= requiredXp
         this.level++
+        this.levelJustIncreased = true
         this.$notifyLevelUp()
+      }
+    },
+    clearLevelFlag() {
+      this.levelJustIncreased = false
+    },
+    unlockAchievement(title: string) {
+      if (!this.achievements.includes(title)) {
+        this.achievements.push(title)
       }
     },
     $notifyLevelUp() {

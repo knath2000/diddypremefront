@@ -10,12 +10,18 @@
     
     <!-- Footer -->
     <AppFooter />
+
+    <!-- Level Up Celebration Modal -->
+    <LevelUpModal />
     
     <!-- Global notifications placeholder for future implementation -->
   </div>
 </template>
 
 <script setup>
+// Global gamification modal import
+import LevelUpModal from '~/components/gamification/LevelUpModal.vue'
+
 // Temporarily simplified setup to debug the issue
 console.log('App.vue setup running')
 
