@@ -21,10 +21,15 @@
       <!-- Gradient overlay for text protection -->
       <div class="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
 
-      <!-- Best Price Badge -->
-      <div v-if="bestPrice" class="absolute top-3 right-3 bg-accent-magenta text-white px-3 py-1.5 rounded-full text-sm font-bold shadow-lg">
-        ${{ bestPrice.price.toLocaleString() }}
-      </div>
+      <!-- Best Price Bubble -->
+      <PriceBubble
+        v-if="bestPrice"
+        :price="bestPrice.price"
+        :platform="bestPrice.platform.toLowerCase()"
+        size="sm"
+        :animated="true"
+        class="absolute top-3 right-3"
+      />
     </div>
 
     <!-- Item Content -->
@@ -53,6 +58,8 @@
 </template>
 
 <script setup>
+import PriceBubble from '~/components/price/PriceBubble.vue'
+
 // Props
 const props = defineProps({
   item: {

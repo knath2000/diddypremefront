@@ -4,7 +4,8 @@ export default defineNuxtPlugin((nuxtApp) => {
   // Auto register glass UI primitives
   const components = {
     ...import.meta.glob('../components/ui/*.vue', { eager: true }),
-    ...import.meta.glob('../components/gamification/*.vue', { eager: true })
+    ...import.meta.glob('../components/gamification/*.vue', { eager: true }),
+    ...import.meta.glob('../components/price/*.vue', { eager: true }),
   }
 
   Object.entries(components).forEach(([path, definition]: any) => {
