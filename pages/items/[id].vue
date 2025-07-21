@@ -52,15 +52,25 @@
         <div v-for="variant in item.variants" :key="variant.id" class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-sm">
           <h3 class="font-medium text-lg text-gray-900 dark:text-white">Size: {{ variant.size }}</h3>
           <p class="text-gray-600 dark:text-gray-400">Color: {{ variant.color }}</p>
-          <div v-if="variant.prices.length > 0" class="mt-2">
-            <span class="font-semibold text-gray-900 dark:text-white">Latest Price: ${{ variant.prices[0].price_usd.toLocaleString() }}</span>
-            <span class="text-sm text-gray-500 dark:text-gray-400 ml-2">on {{ variant.prices[0].platform }}</span>
+
+          <div class="mt-3 space-y-2">
+            <div v-if="getLatestStockXPrice(variant, 'lowestAsk')" class="text-lg">
+              <span class="font-bold text-emerald-600 dark:text-emerald-400">${{ getLatestStockXPrice(variant, 'lowestAsk') }}</span>
+              <span class="text-sm text-gray-500 dark:text-gray-400"> Lowest Ask (StockX)</span>
+            </div>
+            <div v-else-if="getLatestStockXPrice(variant, 'lastSale')" class="text-lg">
+              <span class="font-bold text-gray-800 dark:text-gray-200">${{ getLatestStockXPrice(variant, 'lastSale') }}</span>
+              <span class="text-sm text-gray-500 dark:text-gray-400"> Last Sale (StockX)</span>
+            </div>
+
+            <div v-if="variant.prices.length > 0" class="text-sm">
+              <span class="font-semibold text-gray-700 dark:text-gray-300">${{ variant.prices[0].price_usd.toLocaleString() }}</span>
+              <span class="text-xs text-gray-500 dark:text-gray-400 ml-1">on {{ variant.prices[0].platform }}</span>
+            </div>
           </div>
-          <div v-if="getLatestStockXPrice(variant)" class="mt-2">
-            <span class="font-semibold text-gray-900 dark:text-white">StockX Last Sale: ${{ getLatestStockXPrice(variant).toLocaleString() }}</span>
-          </div>
-          <NuxtLink :to="`/items/${item.id}/prices?variantId=${variant.id}`" class="mt-4 inline-block px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 transition-colors">
-            View Price History
+
+          <NuxtLink :to="`/items/${item.id}/prices?variantId=${variant.id}`" class="block text-right text-red-600 hover:underline mt-2 text-sm">
+            Price History
           </NuxtLink>
         </div>
       </div>
@@ -103,12 +113,12 @@ const { data: stockxResp } = await useFetch(() => `${config.public.apiBase}/item
   server: false,
 });
 
-const getLatestStockXPrice = (variant) => {
+const getLatestStockXPrice = (variant, type) => {
   if (!variant.stockxPrices || variant.stockxPrices.length === 0) {
     return null;
   }
-  const lastSale = variant.stockxPrices.find(p => p.type === 'lastSale');
-  return lastSale ? lastSale.price : null;
+  const stockxRecord = variant.stockxPrices.find(p => p.type === type);
+  return stockxRecord ? stockxRecord.price : null;
 };
 
 const item = computed(() => itemResponse.value?.data || null);
