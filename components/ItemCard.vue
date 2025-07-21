@@ -3,9 +3,9 @@
     <!-- Item Image -->
     <div class="aspect-square bg-gray-100 dark:bg-gray-700 relative overflow-hidden">
       <img 
-        v-if="item.image_url" 
-        :src="item.image_url" 
-        :alt="item.name"
+        v-if="item.image_url || item.imageUrl" 
+        :src="item.image_url || item.imageUrl" 
+        :alt="item.title"
         class="w-full h-full object-cover hover:scale-105 transition-transform duration-200"
         loading="lazy"
       >
@@ -35,13 +35,17 @@
     <div class="p-4">
       <!-- Item Name -->
       <h3 class="font-semibold text-gray-900 dark:text-white mb-2 line-clamp-2">
-        {{ item.name }}
+        {{ item.title }}
       </h3>
       
       <!-- Item Details -->
+      <p v-if="item.description" class="text-sm text-gray-500 dark:text-gray-400 mb-3 line-clamp-3">
+        {{ item.description }}
+      </p>
+      <!-- Item Details -->
       <div class="flex items-center justify-between mb-3">
         <span class="text-sm text-gray-600 dark:text-gray-400">
-          {{ item.category || 'Apparel' }}
+          {{ item.brand || 'Supreme' }}
         </span>
         <span v-if="item.season" class="text-xs bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 px-2 py-1 rounded">
           {{ item.season }}
@@ -51,21 +55,21 @@
       <!-- Platform Prices -->
       <div class="space-y-2 mb-4">
         <div v-if="stockxPrice" class="flex items-center justify-between">
-          <span class="platform-badge platform-stockx">StockX</span>
+          <span class="inline-block px-2 py-1 text-xs font-semibold rounded border platform-stockx">StockX</span>
           <span class="font-semibold text-gray-900 dark:text-white">
             ${{ stockxPrice.toLocaleString() }}
           </span>
         </div>
         
         <div v-if="goatPrice" class="flex items-center justify-between">
-          <span class="platform-badge platform-goat">GOAT</span>
+          <span class="inline-block px-2 py-1 text-xs font-semibold rounded border platform-goat">GOAT</span>
           <span class="font-semibold text-gray-900 dark:text-white">
             ${{ goatPrice.toLocaleString() }}
           </span>
         </div>
         
         <div v-if="grailedPrice" class="flex items-center justify-between">
-          <span class="platform-badge platform-grailed">Grailed</span>
+          <span class="inline-block px-2 py-1 text-xs font-semibold rounded border platform-grailed">Grailed</span>
           <span class="font-semibold text-gray-900 dark:text-white">
             ${{ grailedPrice.toLocaleString() }}
           </span>
@@ -118,18 +122,21 @@ const props = defineProps({
 
 // Computed properties for platform prices
 const stockxPrice = computed(() => {
-  const price = props.item.prices?.find(p => p.platform === 'stockx')
-  return price?.current_price
+  const all = props.item.variants?.flatMap(v => v.prices || []) || []
+  const price = all.find(p => p.platform === 'stockx')
+  return price?.price_usd
 })
 
 const goatPrice = computed(() => {
-  const price = props.item.prices?.find(p => p.platform === 'goat')
-  return price?.current_price
+  const all = props.item.variants?.flatMap(v => v.prices || []) || []
+  const price = all.find(p => p.platform === 'goat')
+  return price?.price_usd
 })
 
 const grailedPrice = computed(() => {
-  const price = props.item.prices?.find(p => p.platform === 'grailed')
-  return price?.current_price
+  const all = props.item.variants?.flatMap(v => v.prices || []) || []
+  const price = all.find(p => p.platform === 'grailed')
+  return price?.price_usd
 })
 
 // Find the best (lowest) price across all platforms
@@ -166,10 +173,6 @@ const handleSetAlert = () => {
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
-}
-
-.platform-badge {
-  @apply inline-block px-2 py-1 text-xs font-semibold rounded border;
 }
 
 .platform-stockx {

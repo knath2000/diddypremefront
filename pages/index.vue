@@ -106,7 +106,7 @@
         </div>
 
         <!-- Items Grid -->
-        <div v-else-if="featuredItems?.length" class="grid grid-auto-fit-md gap-6">
+        <div v-else-if="featuredItems?.length" class="grid gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
           <ItemCard 
             v-for="item in featuredItems" 
             :key="item.id" 
@@ -232,13 +232,17 @@ useHead({
 // Reactive state
 const searchQuery = ref('')
 const router = useRouter()
+const config = useRuntimeConfig()
 
-// Fetch featured items (mock data for now)
-const { data: featuredItems, pending } = await useAsyncData('featured-items', async () => {
-  // TODO: Replace with actual API call
-  // For now, return empty array since we don't have data yet
-  return []
+// Fetch featured items
+const { data: featuredItemsResponse, pending } = await useFetch(() => `${config.public.apiBase}/items?limit=8`, {
+  lazy: true,
+  server: false,            // skip during SSR in dev so page renders instantly
+  timeout: 15000,
+  onRequestError: () => { pending.value = false }
 })
+
+const featuredItems = computed(() => featuredItemsResponse.value?.data || [])
 
 // Search functionality
 const handleSearch = () => {
