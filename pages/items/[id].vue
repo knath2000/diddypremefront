@@ -89,7 +89,9 @@ const route = useRoute();
 const config = useRuntimeConfig();
 const itemId = route.params.id;
 
-const { data: itemResponse, pending } = await useFetch(() => `${config.public.apiBase}/items/${itemId}`);
+const { data: itemResponse, pending } = await useFetch(() => `${config.public.apiBase}/items/${itemId}`, {
+  server: false,
+});
 
 // Fetch StockX snapshot (latest market data)
 const { data: stockxResp } = await useFetch(() => `${config.public.apiBase}/items/${itemId}/stockx`, {

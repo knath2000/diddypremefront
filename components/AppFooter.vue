@@ -87,20 +87,14 @@
               </NuxtLink>
             </li>
             <li>
-              <NuxtLink 
-                to="/api/docs" 
-                class="text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white"
-              >
+              <a href="https://github.com/knath2000/diddytracker#api" target="_blank" class="text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white">
                 API Documentation
-              </NuxtLink>
+              </a>
             </li>
             <li>
-              <NuxtLink 
-                to="/about" 
-                class="text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white"
-              >
+              <a href="https://supremepricetracker.com/about" target="_blank" class="text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white">
                 About Us
-              </NuxtLink>
+              </a>
             </li>
           </ul>
         </div>
@@ -114,24 +108,15 @@
           </div>
           
           <div class="flex items-center space-x-6 text-sm">
-            <NuxtLink 
-              to="/privacy" 
-              class="text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white"
-            >
+            <a href="https://supremepricetracker.com/privacy" target="_blank" class="text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white">
               Privacy Policy
-            </NuxtLink>
-            <NuxtLink 
-              to="/terms" 
-              class="text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white"
-            >
+            </a>
+            <a href="https://supremepricetracker.com/terms" target="_blank" class="text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white">
               Terms of Service
-            </NuxtLink>
-            <NuxtLink 
-              to="/contact" 
-              class="text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white"
-            >
+            </a>
+            <a href="https://supremepricetracker.com/contact" target="_blank" class="text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white">
               Contact
-            </NuxtLink>
+            </a>
           </div>
         </div>
 

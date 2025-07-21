@@ -1,12 +1,21 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
+import tailwindcss from "@tailwindcss/vite";
+
 export default defineNuxtConfig({
   compatibilityDate: '2025-07-15',
   devtools: { enabled: true },
 
   // Modules for Supreme Price Tracker
   modules: [
-    '@pinia/nuxt'
+    '@pinia/nuxt',
   ],
+
+  // Vite configuration
+  vite: {
+    plugins: [
+      tailwindcss(),
+    ],
+  },
 
   // TypeScript configuration
   typescript: {
@@ -15,14 +24,13 @@ export default defineNuxtConfig({
   },
 
   // CSS and styling
-  // css: [], // Moving CSS import to app.vue for better compatibility
-  
+  css: ['~/assets/css/main.css'],
+
   // PostCSS configuration for Tailwind
   postcss: {
     plugins: {
       '@tailwindcss/postcss': {},
-      autoprefixer: {}
-    }
+    },
   },
 
   // Runtime configuration for environment variables
@@ -35,6 +43,7 @@ export default defineNuxtConfig({
     
     // Public keys (exposed to client-side)
     public: {
+      apiBase: process.env.NUXT_PUBLIC_API_BASE_URL || 'http://localhost:8080',
       vercelEnv: process.env.VERCEL_ENV || 'development'
     }
   },
@@ -56,14 +65,19 @@ export default defineNuxtConfig({
 
   // Performance optimizations
   experimental: {
-    viewTransition: true,
+    viewTransition: false,
     payloadExtraction: false,
     sharedPrerenderData: true
   },
 
-  // Build optimizations
+  // Nuxt build configuration
   build: {
-    transpile: ['echarts', 'vue-echarts']
+    transpile: [
+      'echarts',
+      'vue-echarts',
+      // Exclude Prisma from client-side build if it's being pulled in inadvertently
+      // ({ isServer }) => !isServer && '@prisma/client',
+    ],
   },
 
   // App configuration
