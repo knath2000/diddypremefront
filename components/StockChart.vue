@@ -1,5 +1,6 @@
 <template>
-  <div>
+  <div class="glass-chart relative bg-blur rounded-2xl p-4">
+    <div class="absolute inset-0 pointer-events-none bg-gradient-to-br from-white/5 to-transparent rounded-2xl"></div>
     <canvas ref="canvas"></canvas>
   </div>
 </template>
@@ -10,8 +11,8 @@ import { Chart, LineController, CategoryScale, LinearScale, PointElement, LineEl
 
 Chart.register(LineController, CategoryScale, LinearScale, PointElement, LineElement, Tooltip, TimeScale);
 
-interface Props { itemId: string }
-const props = defineProps<Props>();
+interface Props { itemId: string; days?: number }
+const props = withDefaults(defineProps<Props>(), { days: 30 });
 const runtime = useRuntimeConfig();
 
 const canvas = ref<HTMLCanvasElement | null>(null);
@@ -20,7 +21,7 @@ let chart: Chart | null = null;
 async function loadData() {
   // Load date-fns adapter at runtime (avoids SSR import error)
   await import('chartjs-adapter-date-fns');
-  const url = `${runtime.public.apiBase}/items/${props.itemId}/stockx/history?type=lastSale&days=30`;
+  const url = `${runtime.public.apiBase}/items/${props.itemId}/stockx/history?type=lastSale&days=${props.days}`;
   const res = await $fetch(url);
   const data = res.data as any[];
 
@@ -55,14 +56,18 @@ async function loadData() {
 }
 
 onMounted(loadData);
+
+watch(() => props.days, loadData);
 </script>
 
 <style scoped>
- div {
+.glass-chart {
   position: relative;
   min-height: 300px;
- }
- canvas {
+}
+canvas {
   max-height: 300px;
- }
+  position: relative;
+  z-index: 10;
+}
 </style> 
