@@ -25,7 +25,7 @@
 ### Database & Storage
 - **Primary Options**:
   - **PlanetScale** (MySQL with branching)
-  - **Supabase** (PostgreSQL with real-time)
+  - **Railway PostgreSQL** (serverless, free tier) or **Neon Postgres** (branching, autoscaling)
 - **Search Engine**: Meilisearch (self-hosted on Vercel KV)
 - **Cache Layer**: Vercel KV (Redis) for sessions and search cache
 - **File Storage**: Vercel Blob for image assets
@@ -122,8 +122,6 @@ STOCKX_API_SECRET=...                  # StockX API secret
 APIFY_TOKEN=...                        # Apify platform token
 MEILISEARCH_HOST=...                   # Search engine endpoint
 MEILISEARCH_MASTER_KEY=...             # Search engine admin key
-SUPABASE_URL=...                       # Authentication service
-SUPABASE_ANON_KEY=...                  # Public Supabase key
 SENTRY_DSN=...                         # Error tracking
 VERCEL_ENV=development|preview|production
 ```
@@ -197,7 +195,7 @@ datasource db {
 - **Branching**: PlanetScale branch-based schema changes
 
 ### Performance Considerations
-- **Connection Pooling**: Built into PlanetScale/Supabase
+- **Connection Pooling**: Managed by PlanetScale and Railway Postgres
 - **Query Optimization**: Prisma query analysis
 - **Indexing Strategy**: Time-series optimized for price data
 - **Read Replicas**: Available in production tier
@@ -265,7 +263,7 @@ vercel         # Deploy to preview environment
 ## Security Considerations
 
 ### API Security
-- **Authentication**: JWT tokens with Supabase Auth
+- **Authentication**: Custom JWT token-based flow (no third-party auth)
 - **Authorization**: Role-based access control (RBAC)
 - **Rate Limiting**: Per-user and per-IP throttling
 - **Input Validation**: Zod schemas for all inputs

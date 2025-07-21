@@ -56,6 +56,9 @@
             <span class="font-semibold text-gray-900 dark:text-white">Latest Price: ${{ variant.prices[0].price_usd.toLocaleString() }}</span>
             <span class="text-sm text-gray-500 dark:text-gray-400 ml-2">on {{ variant.prices[0].platform }}</span>
           </div>
+          <div v-if="getLatestStockXPrice(variant)" class="mt-2">
+            <span class="font-semibold text-gray-900 dark:text-white">StockX Last Sale: ${{ getLatestStockXPrice(variant).toLocaleString() }}</span>
+          </div>
           <NuxtLink :to="`/items/${item.id}/prices?variantId=${variant.id}`" class="mt-4 inline-block px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 transition-colors">
             View Price History
           </NuxtLink>
@@ -98,6 +101,14 @@ const { data: stockxResp } = await useFetch(() => `${config.public.apiBase}/item
   lazy: true,
   server: false,
 });
+
+const getLatestStockXPrice = (variant) => {
+  if (!variant.stockxPrices || variant.stockxPrices.length === 0) {
+    return null;
+  }
+  const lastSale = variant.stockxPrices.find(p => p.type === 'lastSale');
+  return lastSale ? lastSale.price : null;
+};
 
 const item = computed(() => itemResponse.value?.data || null);
 

@@ -199,8 +199,7 @@ class DataSource {
 ## Security Patterns
 
 ### Authentication & Authorization
-- **Supabase Auth**: Secure user management
-- **JWT Tokens**: Stateless session management
+- **Custom JWT Auth**: Email/password with bcrypt and JWT tokens stored in HttpOnly cookies
 - **Rate Limiting**: Prevent API abuse
 - **Input Validation**: All user inputs sanitized
 
