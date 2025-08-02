@@ -1,116 +1,209 @@
 <template>
   <div class="container mx-auto px-4 py-8">
+    <!-- Loading State -->
     <div v-if="pending" class="text-center">
-      Loading price history...
+      <LoadingSpinner size="lg" />
+      <p class="mt-4 text-gray-600 dark:text-gray-400">Loading price history...</p>
     </div>
+
+    <!-- Error State -->
+    <ErrorState 
+      v-else-if="error" 
+      :error="error"
+      @retry="refresh"
+    />
+
+    <!-- Price History -->
     <div v-else-if="prices.length > 0">
-      <h1 class="text-3xl font-bold mb-4 text-gray-900 dark:text-white">Price History for {{ $route.params.id }}</h1>
-      <p class="text-gray-600 dark:text-gray-400 mb-6">Platform: {{ selectedPlatform || 'All' }}</p>
+      <PriceHistoryHeader 
+        :item-id="itemId"
+        :platform="selectedPlatform"
+        :total-records="prices.length"
+      />
 
+      <!-- Platform Filter -->
       <div class="mb-6">
-        <label for="platform-select" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Filter by Platform:</label>
-        <select id="platform-select" v-model="selectedPlatform" @change="fetchPrices" class="block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-red-500 focus:border-red-500 sm:text-sm rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-white">
-          <option value="">All Platforms</option>
-          <option value="stockx">StockX</option>
-          <option value="goat">GOAT</option>
-          <option value="grailed">Grailed</option>
-        </select>
+        <label for="platform-select" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+          Filter by Platform:
+        </label>
+        <PlatformSelect
+          id="platform-select"
+          v-model="selectedPlatform"
+          :include-all="true"
+          @change="handlePlatformChange"
+        />
       </div>
 
-      <div class="overflow-x-auto">
-        <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-          <thead class="bg-gray-50 dark:bg-gray-700">
-            <tr>
-              <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Platform</th>
-              <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Price (USD)</th>
-              <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Type</th>
-              <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Captured At</th>
-            </tr>
-          </thead>
-          <tbody class="bg-white divide-y divide-gray-200 dark:bg-gray-800 dark:divide-gray-700">
-            <tr v-for="price in prices" :key="price.id">
-              <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white">{{ price.platform }}</td>
-              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">${{ price.price_usd.toLocaleString() }}</td>
-              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">{{ price.ask_or_bid }}</td>
-              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">{{ new Date(price.capturedAt).toLocaleString() }}</td>
-            </tr>
-          </tbody>
-        </table>
+      <!-- Price Table -->
+      <PriceHistoryTable 
+        :prices="prices"
+        :loading="pending"
+      />
+
+      <!-- Export Options -->
+      <div class="mt-6 flex justify-end gap-4">
+        <ExportButton 
+          :data="prices"
+          format="csv"
+          :filename="`price-history-${itemId}`"
+        />
+        <ExportButton 
+          :data="prices"
+          format="json"
+          :filename="`price-history-${itemId}`"
+        />
       </div>
     </div>
-    <div v-else class="text-center py-12">
-      <h3 class="text-xl font-medium text-gray-900 dark:text-white mb-2">No price history found</h3>
-      <p class="text-gray-600 dark:text-gray-400 mb-6">There is no price data available for this item or variant yet.</p>
-      <NuxtLink :to="`/items/${$route.params.id}`" class="px-6 py-3 border-2 border-red-600 text-red-600 font-semibold rounded-lg hover:bg-red-600 hover:text-white transition-colors duration-200">
-        Back to Item Details
-      </NuxtLink>
-    </div>
+
+    <!-- Empty State -->
+    <EmptyState 
+      v-else
+      title="No price history found"
+      description="There is no price data available for this item or variant yet."
+      :show-action="true"
+      action-text="Back to Item Details"
+      :action-link="`/items/${itemId}`"
+    />
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, watch, computed } from 'vue';
-import { useRoute } from 'vue-router';
+import { ref, computed } from 'vue'
+import type { Platform, Price } from '~/types/price'
 
-const route = useRoute();
-const config = useRuntimeConfig();
-const itemId = route.params.id;
-const variantId = route.query.variantId;
+// Components
+import LoadingSpinner from '~/components/ui/LoadingSpinner.vue'
+import ErrorState from '~/components/ui/ErrorState.vue'
+import EmptyState from '~/components/ui/EmptyState.vue'
+import PriceHistoryHeader from '~/components/price/PriceHistoryHeader.vue'
+import PlatformSelect from '~/components/price/PlatformSelect.vue'
+import PriceHistoryTable from '~/components/price/PriceHistoryTable.vue'
+import ExportButton from '~/components/ui/ExportButton.vue'
 
-const selectedPlatform = ref(String(route.query.platform || ''));
+// Route and config
+const route = useRoute()
+const config = useRuntimeConfig()
 
+// Extract params with type safety
+const itemId = computed(() => String(route.params.id))
+const variantId = computed(() => {
+  const id = route.query.variantId
+  return typeof id === 'string' ? id : undefined
+})
+
+// State
+const selectedPlatform = ref<Platform | ''>(
+  route.query.platform && typeof route.query.platform === 'string' 
+    ? route.query.platform as Platform 
+    : ''
+)
+
+// Composables
+const { formatPrice } = usePriceFormatter()
+const { trackEvent } = useAnalytics()
+
+// Build fetch URL
 const fetchUrl = computed(() => {
   // StockX uses separate endpoint
   if (selectedPlatform.value === 'stockx') {
-    // default to lastSale series
-    return `${config.public.apiBase}/items/${itemId}/stockx/history?type=lastSale&days=90`;
+    return `${config.public.apiBase}/items/${itemId.value}/stockx/history?type=lastSale&days=90`
   }
-  let url = `${config.public.apiBase}/items/${itemId}/prices`;
-  const params = new URLSearchParams();
-  if (variantId && typeof variantId === 'string') {
-    params.append('variantId', variantId);
+  
+  // Regular price endpoint
+  const url = new URL(`${config.public.apiBase}/items/${itemId.value}/prices`)
+  
+  if (variantId.value) {
+    url.searchParams.append('variantId', variantId.value)
   }
+  
   if (selectedPlatform.value) {
-    params.append('platform', selectedPlatform.value);
+    url.searchParams.append('platform', selectedPlatform.value)
   }
-  if (params.toString()) {
-    url += `?${params.toString()}`;
-  }
-  return url;
-});
+  
+  return url.toString()
+})
 
-const { data: pricesResponse, pending, refresh } = await useFetch(fetchUrl, {
+// Fetch data
+const { 
+  data: pricesResponse, 
+  pending, 
+  error,
+  refresh 
+} = await useFetch<{ data: Price[] }>(fetchUrl, {
   lazy: true,
   server: false,
-});
-
-const prices = computed(() => {
-  if (!pricesResponse.value) return [];
-  // StockX history returns [{price, fetchedAt, ...}]
-  if (selectedPlatform.value === 'stockx') {
-    const data = (pricesResponse.value as any).data || [];
-    return data.map((p:any) => ({
-      platform: 'stockx',
-      price_usd: p.price,
-      ask_or_bid: p.type,
-      capturedAt: p.fetchedAt,
-    }));
+  onResponse({ response }) {
+    // Track successful data fetch
+    trackEvent('price_history_viewed', {
+      item_id: itemId.value,
+      platform: selectedPlatform.value || 'all',
+      record_count: response._data?.data?.length || 0
+    })
+  },
+  onResponseError({ response }) {
+    console.error('Failed to fetch price history:', response._data)
   }
-  return (pricesResponse.value as any).data || [];
-});
+})
 
-const fetchPrices = () => {
-  refresh();
-};
+// Transform prices based on platform
+const prices = computed<Price[]>(() => {
+  if (!pricesResponse.value?.data) return []
+  
+  // StockX history needs transformation
+  if (selectedPlatform.value === 'stockx') {
+    const stockxData = pricesResponse.value.data as any[]
+    return stockxData.map(item => ({
+      id: `stockx-${item.fetchedAt}`,
+      platform: 'stockx' as Platform,
+      price_usd: item.price,
+      currency: 'USD',
+      ask_or_bid: item.type || 'last',
+      captured_at: item.fetchedAt,
+      variant_id: variantId.value || ''
+    }))
+  }
+  
+  return pricesResponse.value.data
+})
 
-watch(selectedPlatform, () => {
-  fetchPrices();
-});
+// Handle platform change
+const handlePlatformChange = () => {
+  // Update URL query params
+  const query: Record<string, string> = {}
+  
+  if (selectedPlatform.value) {
+    query.platform = selectedPlatform.value
+  }
+  
+  if (variantId.value) {
+    query.variantId = variantId.value
+  }
+  
+  navigateTo({
+    path: route.path,
+    query
+  })
+  
+  // Track filter change
+  trackEvent('price_filter_changed', {
+    platform: selectedPlatform.value || 'all'
+  })
+}
 
+// SEO
 useHead({
-  title: `Price History for ${itemId} - Supreme Price Tracker`,
+  title: computed(() => `Price History - Item ${itemId.value}`),
   meta: [
-    { name: 'description', content: `Historical price data for Supreme item ${itemId}.` }
+    { 
+      name: 'description', 
+      content: computed(() => 
+        `Historical price data for Supreme item ${itemId.value} across multiple platforms.`
+      )
+    },
+    {
+      name: 'robots',
+      content: 'noindex, follow' // Don't index price history pages
+    }
   ]
-});
+})
 </script> 

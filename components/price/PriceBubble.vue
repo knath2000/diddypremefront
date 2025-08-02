@@ -1,99 +1,187 @@
 <template>
   <div
     v-motion
-    :initial="animated ? { scale: 0, opacity: 0 } : null"
-    :enter="animated ? { scale: 1, opacity: 1, transition: { type: 'spring', stiffness: 180, damping: 12 } } : null"
-    :class="[
-      'relative flex items-center justify-center rounded-full shadow-lg select-none cursor-default',
-      sizeClass,
-      trendColor,
-      'bg-blur backdrop-blur-md'
-    ]"
+    :initial="motionInitial"
+    :enter="motionEnter"
+    :class="bubbleClasses"
+    :aria-label="ariaLabel"
+    role="status"
   >
     <!-- Platform badge -->
     <img
       v-if="platformIcon"
       :src="platformIcon"
-      :alt="platform"
+      :alt="`${platform} logo`"
       class="absolute -top-2 -left-2 h-5 w-5 rounded-full bg-white p-0.5 shadow"
+      loading="lazy"
     />
 
     <!-- Price text -->
     <span class="font-semibold text-white">
-      ${{ price.toLocaleString() }}
+      {{ formattedPrice }}
     </span>
 
     <!-- Trend arrow -->
-    <svg
-      v-if="previousPrice !== undefined"
-      :class="['h-3 w-3 ml-1', trend === 'up' ? 'text-emerald-400' : 'text-rose-400']"
-      fill="currentColor"
-      viewBox="0 0 20 20"
-    >
-      <path
-        v-if="trend === 'up'"
-        fill-rule="evenodd"
-        d="M5 10l5-5 5 5H9v5H7v-5H5z"
-        clip-rule="evenodd"
-      />
-      <path
-        v-else
-        fill-rule="evenodd"
-        d="M15 10l-5 5-5-5h6V5h2v5h2z"
-        clip-rule="evenodd"
-      />
-    </svg>
+    <TrendIndicator 
+      v-if="showTrend"
+      :trend="trend"
+      :percentage="trendPercentage"
+      size="sm"
+    />
   </div>
 </template>
 
 <script setup lang="ts">
 import { computed } from 'vue'
 import { useMotion } from '@vueuse/motion'
+import type { Platform, PriceSize, PriceTrend } from '~/types/price'
+
+// Sub-component for trend indicator
+import TrendIndicator from './TrendIndicator.vue'
 
 interface PriceBubbleProps {
   price: number
   previousPrice?: number
-  platform: 'stockx' | 'goat' | 'grailed'
-  size?: 'sm' | 'md' | 'lg'
+  platform: Platform
+  size?: PriceSize
   animated?: boolean
+  showTrend?: boolean
+  currency?: string
+  locale?: string
 }
 
 const props = withDefaults(defineProps<PriceBubbleProps>(), {
   size: 'md',
   animated: false,
+  showTrend: true,
+  currency: 'USD',
+  locale: 'en-US'
 })
 
-const trend = computed(() => {
-  if (props.previousPrice === undefined) return undefined
-  return props.price >= props.previousPrice ? 'up' : 'down'
+// Composables
+const { formatPrice } = usePriceFormatter()
+const { getPlatformIcon, getPlatformColor } = usePlatformConfig()
+
+// Computed properties
+const formattedPrice = computed(() => 
+  formatPrice(props.price, {
+    currency: props.currency,
+    locale: props.locale
+  })
+)
+
+const trend = computed<PriceTrend | null>(() => {
+  if (props.previousPrice === undefined) return null
+  if (props.price === props.previousPrice) return 'neutral'
+  return props.price > props.previousPrice ? 'up' : 'down'
 })
 
-const trendColor = computed(() => {
-  if (!trend.value) return ''
-  return trend.value === 'up' ? 'ring-2 ring-emerald-400/40' : 'ring-2 ring-rose-400/40'
+const trendPercentage = computed(() => {
+  if (!props.previousPrice || props.previousPrice === 0) return 0
+  return ((props.price - props.previousPrice) / props.previousPrice) * 100
 })
 
-const sizeClass = computed(() => {
-  switch (props.size) {
-    case 'sm':
-      return 'h-8 px-3 text-xs'
-    case 'lg':
-      return 'h-14 px-6 text-lg'
-    default:
-      return 'h-10 px-4 text-sm'
+const platformIcon = computed(() => getPlatformIcon(props.platform))
+
+const bubbleClasses = computed(() => [
+  'price-bubble',
+  `price-bubble--${props.size}`,
+  `price-bubble--${props.platform}`,
+  {
+    [`price-bubble--${trend.value}`]: trend.value,
+    'price-bubble--animated': props.animated
   }
+])
+
+const ariaLabel = computed(() => {
+  let label = `${props.platform} price: ${formattedPrice.value}`
+  if (trend.value && props.showTrend) {
+    const direction = trend.value === 'up' ? 'increased' : 'decreased'
+    label += `, ${direction} by ${Math.abs(trendPercentage.value).toFixed(1)}%`
+  }
+  return label
 })
 
-const platformIcon = computed(() => {
-  switch (props.platform) {
-    case 'stockx':
-      return '/icons/stockx.svg'
-    case 'goat':
-      return '/icons/goat.svg'
-    case 'grailed':
-      return '/icons/grailed.svg'
-    default:
-      return undefined
+// Motion configuration
+const motionInitial = computed(() => 
+  props.animated ? { scale: 0, opacity: 0 } : null
+)
+
+const motionEnter = computed(() => 
+  props.animated ? {
+    scale: 1,
+    opacity: 1,
+    transition: {
+      type: 'spring',
+      stiffness: 180,
+      damping: 12
+    }
+  } : null
+)
+</script>
+
+<style scoped>
+.price-bubble {
+  @apply relative flex items-center justify-center rounded-full shadow-lg;
+  @apply select-none cursor-default bg-blur backdrop-blur-md;
+  @apply transition-all duration-200;
+}
+
+/* Size variants */
+.price-bubble--sm {
+  @apply h-8 px-3 text-xs gap-1;
+}
+
+.price-bubble--md {
+  @apply h-10 px-4 text-sm gap-1.5;
+}
+
+.price-bubble--lg {
+  @apply h-14 px-6 text-lg gap-2;
+}
+
+/* Platform variants */
+.price-bubble--stockx {
+  @apply ring-1 ring-green-400/40;
+}
+
+.price-bubble--goat {
+  @apply ring-1 ring-blue-400/40;
+}
+
+.price-bubble--grailed {
+  @apply ring-1 ring-purple-400/40;
+}
+
+/* Trend variants */
+.price-bubble--up {
+  @apply ring-2 ring-emerald-400/40;
+}
+
+.price-bubble--down {
+  @apply ring-2 ring-rose-400/40;
+}
+
+.price-bubble--neutral {
+  @apply ring-1 ring-gray-400/40;
+}
+
+/* Hover effects */
+.price-bubble:hover {
+  @apply scale-105 shadow-xl;
+}
+
+/* Animation */
+.price-bubble--animated {
+  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
   }
-})
-</script> 
+  50% {
+    opacity: 0.8;
+  }
+}
+</style> 
