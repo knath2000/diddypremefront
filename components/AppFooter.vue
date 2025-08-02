@@ -1,136 +1,87 @@
 <template>
-  <footer class="bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 mt-auto">
+  <footer class="app-footer">
     <div class="container mx-auto px-4 py-8">
       <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
         <!-- Brand Section -->
         <div class="col-span-1 md:col-span-2">
-          <div class="flex items-center space-x-2 mb-4">
-            <div class="w-8 h-8 bg-red-600 rounded-md flex items-center justify-center">
-              <span class="text-white font-bold text-sm">S</span>
-            </div>
-            <span class="font-bold text-xl text-gray-900 dark:text-white">
-              Supreme Tracker
-            </span>
-          </div>
-          <p class="text-gray-600 dark:text-gray-400 mb-4 max-w-md">
-            Real-time Supreme streetwear price tracking across StockX, GOAT, and Grailed. 
-            Get the best deals and never overpay again.
-          </p>
-          <div class="flex space-x-4">
-            <a href="#" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 text-xl">
-              🐦
-            </a>
-            <a href="#" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 text-xl">
-              💬
-            </a>
-            <a href="#" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 text-xl">
-              📷
-            </a>
-          </div>
+          <BrandInfo />
+          <SocialLinks :links="socialLinks" />
         </div>
 
         <!-- Platform Links -->
         <div>
-          <h3 class="font-semibold text-gray-900 dark:text-white mb-4">Platforms</h3>
-          <ul class="space-y-2">
-            <li>
-              <a 
-                href="https://stockx.com" 
-                target="_blank" 
-                rel="noopener noreferrer"
-                class="text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white flex items-center space-x-2"
-              >
-                <span class="platform-badge platform-stockx">StockX</span>
-              </a>
-            </li>
-            <li>
-              <a 
-                href="https://goat.com" 
-                target="_blank" 
-                rel="noopener noreferrer"
-                class="text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white flex items-center space-x-2"
-              >
-                <span class="platform-badge platform-goat">GOAT</span>
-              </a>
-            </li>
-            <li>
-              <a 
-                href="https://grailed.com" 
-                target="_blank" 
-                rel="noopener noreferrer"
-                class="text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white flex items-center space-x-2"
-              >
-                <span class="platform-badge platform-grailed">Grailed</span>
-              </a>
-            </li>
-          </ul>
+          <h3 class="footer-heading">Platforms</h3>
+          <PlatformLinks />
         </div>
 
         <!-- Quick Links -->
         <div>
-          <h3 class="font-semibold text-gray-900 dark:text-white mb-4">Quick Links</h3>
-          <ul class="space-y-2">
-            <li>
-              <NuxtLink 
-                to="/trending" 
-                class="text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white"
-              >
-                Trending Items
-              </NuxtLink>
-            </li>
-            <li>
-              <NuxtLink 
-                to="/alerts" 
-                class="text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white"
-              >
-                Price Alerts
-              </NuxtLink>
-            </li>
-            <li>
-              <a href="https://github.com/knath2000/diddytracker#api" target="_blank" class="text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white">
-                API Documentation
-              </a>
-            </li>
-            <li>
-              <a href="https://supremepricetracker.com/about" target="_blank" class="text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white">
-                About Us
-              </a>
-            </li>
-          </ul>
+          <h3 class="footer-heading">Quick Links</h3>
+          <QuickLinks :links="quickLinks" />
         </div>
       </div>
 
       <!-- Bottom Section -->
-      <div class="border-t border-gray-200 dark:border-gray-700 pt-6 mt-8">
-        <div class="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
-          <div class="text-sm text-gray-600 dark:text-gray-400">
-            © {{ currentYear }} Supreme Tracker. All rights reserved.
-          </div>
-          
-          <div class="flex items-center space-x-6 text-sm">
-            <a href="https://supremepricetracker.com/privacy" target="_blank" class="text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white">
-              Privacy Policy
-            </a>
-            <a href="https://supremepricetracker.com/terms" target="_blank" class="text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white">
-              Terms of Service
-            </a>
-            <a href="https://supremepricetracker.com/contact" target="_blank" class="text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white">
-              Contact
-            </a>
-          </div>
-        </div>
-
-        <!-- Data Attribution -->
-        <div class="mt-4 text-xs text-gray-500 dark:text-gray-500 text-center">
-          Price data sourced from StockX™, GOAT™, and Grailed™. 
-          All trademarks are property of their respective owners.
-        </div>
-      </div>
+      <FooterBottom 
+        :year="currentYear"
+        :links="legalLinks"
+      />
     </div>
   </footer>
 </template>
 
-<script setup>
-// Get current year for copyright
-const currentYear = new Date().getFullYear()
-</script> 
+<script setup lang="ts">
+import { computed } from 'vue'
+
+// Sub-components
+import BrandInfo from './footer/BrandInfo.vue'
+import SocialLinks from './footer/SocialLinks.vue'
+import PlatformLinks from './footer/PlatformLinks.vue'
+import QuickLinks from './footer/QuickLinks.vue'
+import FooterBottom from './footer/FooterBottom.vue'
+
+// Types
+interface Link {
+  text: string
+  href: string
+  external?: boolean
+}
+
+interface SocialLink {
+  name: string
+  icon: string
+  href: string
+}
+
+// Data
+const currentYear = computed(() => new Date().getFullYear())
+
+const socialLinks: SocialLink[] = [
+  { name: 'Twitter', icon: '🐦', href: 'https://twitter.com/supremetracker' },
+  { name: 'Discord', icon: '💬', href: 'https://discord.gg/supremetracker' },
+  { name: 'Instagram', icon: '📷', href: 'https://instagram.com/supremetracker' }
+]
+
+const quickLinks: Link[] = [
+  { text: 'Trending Items', href: '/trending' },
+  { text: 'Price Alerts', href: '/alerts' },
+  { text: 'API Documentation', href: 'https://docs.supremetracker.com/api', external: true },
+  { text: 'About Us', href: '/about' }
+]
+
+const legalLinks: Link[] = [
+  { text: 'Privacy Policy', href: '/privacy' },
+  { text: 'Terms of Service', href: '/terms' },
+  { text: 'Contact', href: '/contact' }
+]
+</script>
+
+<style scoped>
+.app-footer {
+  @apply bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 mt-auto;
+}
+
+.footer-heading {
+  @apply font-semibold text-gray-900 dark:text-white mb-4;
+}
+</style> 

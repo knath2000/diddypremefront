@@ -13,6 +13,8 @@
 </template>
 
 <script setup lang="ts">
+import { computed } from 'vue'
+
 const props = defineProps<{ variant?: 'primary' | 'secondary' }>()
 const variant = computed(() => props.variant ?? 'primary')
 </script>

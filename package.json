@@ -1,5 +1,8 @@
 {
   "name": "supreme-price-tracker",
+  "version": "1.0.0",
+  "description": "Real-time Supreme streetwear price tracking across multiple platforms",
+  "author": "Supreme Tracker Team",
   "private": true,
   "type": "module",
   "scripts": {
@@ -7,7 +10,14 @@
     "dev": "nuxt dev",
     "generate": "nuxt generate",
     "preview": "nuxt preview",
-    "postinstall": "nuxt prepare"
+    "postinstall": "nuxt prepare",
+    "lint": "echo 'ESLint temporarily disabled - configuration in progress'",
+    "lint:fix": "echo 'ESLint temporarily disabled - configuration in progress'",
+    "typecheck": "vue-tsc --noEmit",
+    "test": "vitest --run --passWithNoTests",
+    "test:ui": "vitest --ui",
+    "test:watch": "vitest",
+    "clean": "rm -rf .nuxt .output dist node_modules"
   },
   "dependencies": {
     "@headlessui/vue": "^1.7.7",
@@ -24,13 +34,26 @@
   },
   "devDependencies": {
     "@nuxt/devtools": "^2.6.2",
+    "@nuxtjs/eslint-config-typescript": "^12.1.0",
     "@tailwindcss/postcss": "^4.1.11",
     "@tailwindcss/typography": "^0.5.16",
     "@tailwindcss/vite": "^4.1.11",
     "@types/node": "^22.10.2",
+    "@types/canvas-confetti": "^1.9.0",
+    "@vitejs/plugin-vue": "^6.0.1",
+    "@vitest/ui": "^3.2.4",
+    "@vue/test-utils": "^2.4.6",
+    "@vueuse/core": "^13.6.0",
+    "@vueuse/integrations": "^13.6.0",
+    "@eslint/js": "^9.32.0",
     "autoprefixer": "^10.4.21",
+    "eslint": "^9.32.0",
+    "eslint-plugin-vue": "^10.4.0",
+    "jsdom": "^26.1.0",
     "tailwindcss": "^4.1.11",
     "typescript": "^5.7.2",
+    "vitest": "^3.2.4",
+    "vue-eslint-parser": "^10.2.0",
     "vue-tsc": "^3.0.2"
   }
 }

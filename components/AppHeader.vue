@@ -199,7 +199,8 @@ const handleAccountClick = () => {
 }
 
 // Close mobile menu on route change
-watch(() => router.currentRoute.value.path, () => {
+const route = useRoute()
+watch(() => route.path, () => {
   mobileMenuOpen.value = false
 })
 </script> 
