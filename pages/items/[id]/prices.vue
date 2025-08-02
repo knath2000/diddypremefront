@@ -57,7 +57,7 @@ const config = useRuntimeConfig();
 const itemId = route.params.id;
 const variantId = route.query.variantId;
 
-const selectedPlatform = ref(route.query.platform || '');
+const selectedPlatform = ref(String(route.query.platform || ''));
 
 const fetchUrl = computed(() => {
   // StockX uses separate endpoint
@@ -67,7 +67,7 @@ const fetchUrl = computed(() => {
   }
   let url = `${config.public.apiBase}/items/${itemId}/prices`;
   const params = new URLSearchParams();
-  if (variantId) {
+  if (variantId && typeof variantId === 'string') {
     params.append('variantId', variantId);
   }
   if (selectedPlatform.value) {
@@ -88,14 +88,15 @@ const prices = computed(() => {
   if (!pricesResponse.value) return [];
   // StockX history returns [{price, fetchedAt, ...}]
   if (selectedPlatform.value === 'stockx') {
-    return (pricesResponse.value.data || []).map((p:any) => ({
+    const data = (pricesResponse.value as any).data || [];
+    return data.map((p:any) => ({
       platform: 'stockx',
       price_usd: p.price,
       ask_or_bid: p.type,
       capturedAt: p.fetchedAt,
     }));
   }
-  return pricesResponse.value.data || [];
+  return (pricesResponse.value as any).data || [];
 });
 
 const fetchPrices = () => {

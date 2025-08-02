@@ -107,12 +107,6 @@ const bestPrice = computed(() => {
     current.price < min.price ? current : min
   )
 })
-
-// Handle setting price alert
-const handleSetAlert = () => {
-  // TODO: Implement price alert functionality
-  console.log('Set alert for:', props.item.name)
-}
 </script>
 
 <style scoped>

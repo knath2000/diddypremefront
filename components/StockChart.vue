@@ -22,8 +22,8 @@ async function loadData() {
   // Load date-fns adapter at runtime (avoids SSR import error)
   await import('chartjs-adapter-date-fns');
   const url = `${runtime.public.apiBase}/items/${props.itemId}/stockx/history?type=lastSale&days=${props.days}`;
-  const res = await $fetch(url);
-  const data = res.data as any[];
+  const res = await $fetch<{ data: Array<{ fetchedAt: string; price: number; type: string }> }>(url);
+  const data = res.data || [];
 
   const labels = data.map((d) => new Date(d.fetchedAt));
   const prices = data.map((d) => d.price);
