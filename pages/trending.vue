@@ -21,10 +21,7 @@
           We're working on advanced trending analytics to help you discover the hottest Supreme items before they peak.
         </p>
         <div class="space-y-2 text-sm text-red-600 dark:text-red-400">
-          <p>✨ Real-time trending scores</p>
-          <p>📈 Price velocity indicators</p>
-          <p>🔥 Community interest metrics</p>
-          <p>⚡ Early opportunity alerts</p>
+          <p v-for="feat in upcomingFeatures" :key="feat.text">{{ feat.icon }} {{ feat.text }}</p>
         </div>
       </div>
 
@@ -41,7 +38,19 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
+interface UpcomingFeature {
+  icon: string
+  text: string
+}
+
+const upcomingFeatures: UpcomingFeature[] = [
+  { icon: '✨', text: 'Real-time trending scores' },
+  { icon: '📈', text: 'Price velocity indicators' },
+  { icon: '🔥', text: 'Community interest metrics' },
+  { icon: '⚡', text: 'Early opportunity alerts' }
+]
+
 // Meta tags for SEO
 useHead({
   title: 'Trending Supreme Items - Supreme Price Tracker',
@@ -49,6 +58,17 @@ useHead({
     {
       name: 'description',
       content: 'Discover trending Supreme items with rising prices and high demand. Coming soon with advanced analytics.'
+    }
+  ],
+  script: [
+    {
+      type: 'application/ld+json',
+      children: JSON.stringify({
+        '@context': 'https://schema.org',
+        '@type': 'WebPage',
+        name: 'Trending Supreme Items',
+        description: 'Trending Supreme streetwear with price analytics'
+      })
     }
   ]
 })

@@ -8,8 +8,8 @@
     <!-- Item Image -->
     <div class="aspect-square relative overflow-hidden">
       <img 
-        v-if="item.image_url || item.imageUrl" 
-        :src="item.image_url || item.imageUrl" 
+        v-if="imageUrl" 
+        :src="imageUrl" 
         :alt="item.title"
         class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300 ease-in-out"
         loading="lazy"
@@ -57,62 +57,72 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
+import { computed } from 'vue'
 import PriceBubble from '~/components/price/PriceBubble.vue'
 
-// Props
-const props = defineProps({
-  item: {
-    type: Object,
-    required: true
-  }
-})
+interface Price {
+  platform: string
+  price_usd: number
+}
 
-// Computed properties for platform prices
-const stockxPrice = computed(() => {
-  const all = props.item.variants?.flatMap(v => v.prices || []) || []
-  const price = all.find(p => p.platform === 'stockx')
-  return price?.price_usd
-})
+interface Variant {
+  id: string
+  size?: string
+  prices?: Price[]
+}
 
-const goatPrice = computed(() => {
-  const all = props.item.variants?.flatMap(v => v.prices || []) || []
-  const price = all.find(p => p.platform === 'goat')
-  return price?.price_usd
-})
+interface Item {
+  id: string | number
+  title: string
+  image_url?: string
+  imageUrl?: string
+  images?: { url: string }[]
+  season?: string
+  variants?: Variant[]
+}
 
-const grailedPrice = computed(() => {
-  const all = props.item.variants?.flatMap(v => v.prices || []) || []
-  const price = all.find(p => p.platform === 'grailed')
-  return price?.price_usd
-})
+const props = defineProps<{ item: Item }>()
 
-// Find the best (lowest) price across all platforms
-const bestPrice = computed(() => {
-  const prices = []
-  
-  if (stockxPrice.value) {
-    prices.push({ platform: 'StockX', price: stockxPrice.value })
-  }
-  if (goatPrice.value) {
-    prices.push({ platform: 'GOAT', price: goatPrice.value })
-  }
-  if (grailedPrice.value) {
-    prices.push({ platform: 'Grailed', price: grailedPrice.value })
-  }
-  
-  if (prices.length === 0) return null
-  
-  return prices.reduce((min, current) => 
-    current.price < min.price ? current : min
+const emit = defineEmits<{
+  'set-alert': [item: Item]
+  'view-details': [item: Item]
+}>()
+
+// Normalised image url
+const imageUrl = computed(() => {
+  return (
+    props.item.image_url ||
+    props.item.imageUrl ||
+    props.item.images?.[0]?.url ||
+    '/images/placeholder.png'
   )
 })
 
-// Handle setting price alert
-const handleSetAlert = () => {
-  // TODO: Implement price alert functionality
-  console.log('Set alert for:', props.item.name)
-}
+// Flatten variant prices once
+const allPrices = computed(() => {
+  return props.item.variants?.flatMap(v => v.prices ?? []) ?? []
+})
+
+// Group by platform then find min price
+const pricesByPlatform = computed(() => {
+  const map: Record<string, number> = {}
+  for (const p of allPrices.value) {
+    if (p.price_usd == null) continue
+    const existing = map[p.platform]
+    map[p.platform] = existing != null ? Math.min(existing, p.price_usd) : p.price_usd
+  }
+  return map
+})
+
+const bestPrice = computed(() => {
+  const entries = Object.entries(pricesByPlatform.value)
+  if (!entries.length) return null
+  return entries.reduce((min, curr) => (curr[1] < min[1] ? curr : min))
+})
+
+// Handlers
+const handleSetAlert = () => emit('set-alert', props.item)
 </script>
 
 <style scoped>
