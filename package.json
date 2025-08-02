@@ -1,5 +1,8 @@
 {
   "name": "supreme-price-tracker",
+  "version": "1.0.0",
+  "description": "Real-time Supreme streetwear price tracking across multiple platforms",
+  "author": "Supreme Tracker Team",
   "private": true,
   "type": "module",
   "scripts": {
@@ -7,7 +10,13 @@
     "dev": "nuxt dev",
     "generate": "nuxt generate",
     "preview": "nuxt preview",
-    "postinstall": "nuxt prepare"
+    "postinstall": "nuxt prepare",
+    "lint": "eslint --ext .js,.ts,.vue .",
+    "lint:fix": "eslint --ext .js,.ts,.vue . --fix",
+    "typecheck": "vue-tsc --noEmit",
+    "test": "vitest",
+    "test:ui": "vitest --ui",
+    "clean": "rm -rf .nuxt .output dist node_modules"
   },
   "dependencies": {
     "@headlessui/vue": "^1.7.7",
@@ -31,6 +40,10 @@
     "autoprefixer": "^10.4.21",
     "tailwindcss": "^4.1.11",
     "typescript": "^5.7.2",
-    "vue-tsc": "^3.0.2"
+    "vue-tsc": "^3.0.2",
+    "@nuxtjs/eslint-config-typescript": "^12.1.0",
+    "eslint": "^8.57.0",
+    "vitest": "^1.2.0",
+    "@vue/test-utils": "^2.4.3"
   }
 }

@@ -76,9 +76,29 @@ export default defineNuxtConfig({
     transpile: [
       'echarts',
       'vue-echarts',
-      // Exclude Prisma from client-side build if it's being pulled in inadvertently
-      // ({ isServer }) => !isServer && '@prisma/client',
+      // Additional transpiles can be added here if needed
     ],
+  },
+
+  // Security headers configuration
+  security: {
+    headers: {
+      crossOriginEmbedderPolicy: process.env.NODE_ENV === 'development' ? 'unsafe-none' : 'require-corp',
+      contentSecurityPolicy: {
+        'img-src': ["'self'", 'data:', 'https:'],
+        'script-src': ["'self'", 'https:', "'unsafe-inline'"]
+      }
+    }
+  },
+
+  // Global error handling hooks
+  hooks: {
+    'render:route': (url, result) => {
+      if ((result as any).error) {
+        // eslint-disable-next-line no-console
+        console.error(`Error rendering ${url}:`, (result as any).error)
+      }
+    }
   },
 
   // App configuration
