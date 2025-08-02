@@ -33,12 +33,12 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 
-// Sub-components
-import BrandInfo from './footer/BrandInfo.vue'
-import SocialLinks from './footer/SocialLinks.vue'
-import PlatformLinks from './footer/PlatformLinks.vue'
-import QuickLinks from './footer/QuickLinks.vue'
-import FooterBottom from './footer/FooterBottom.vue'
+// Sub-components (commented out until created)
+// import BrandInfo from './footer/BrandInfo.vue'
+// import SocialLinks from './footer/SocialLinks.vue'
+// import PlatformLinks from './footer/PlatformLinks.vue'
+// import QuickLinks from './footer/QuickLinks.vue'
+// import FooterBottom from './footer/FooterBottom.vue'
 
 // Types
 interface Link {

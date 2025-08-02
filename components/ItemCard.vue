@@ -62,12 +62,12 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import { computed, ref, onMounted } from 'vue'
 import type { Item, Price, Platform } from '~/types'
 import PriceBubble from '~/components/price/PriceBubble.vue'
-import ItemImage from './item/ItemImage.vue'
-import ItemMetadata from './item/ItemMetadata.vue'
-import QuickPriceView from './item/QuickPriceView.vue'
+// import ItemImage from './item/ItemImage.vue'
+// import ItemMetadata from './item/ItemMetadata.vue'
+// import QuickPriceView from './item/QuickPriceView.vue'
 
 interface Props {
   item: Item

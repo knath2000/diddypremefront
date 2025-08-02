@@ -75,10 +75,10 @@ import type { Platform, Price } from '~/types/price'
 import LoadingSpinner from '~/components/ui/LoadingSpinner.vue'
 import ErrorState from '~/components/ui/ErrorState.vue'
 import EmptyState from '~/components/ui/EmptyState.vue'
-import PriceHistoryHeader from '~/components/price/PriceHistoryHeader.vue'
-import PlatformSelect from '~/components/price/PlatformSelect.vue'
-import PriceHistoryTable from '~/components/price/PriceHistoryTable.vue'
-import ExportButton from '~/components/ui/ExportButton.vue'
+// import PriceHistoryHeader from '~/components/price/PriceHistoryHeader.vue'
+// import PlatformSelect from '~/components/price/PlatformSelect.vue'
+// import PriceHistoryTable from '~/components/price/PriceHistoryTable.vue'
+// import ExportButton from '~/components/ui/ExportButton.vue'
 
 // Route and config
 const route = useRoute()

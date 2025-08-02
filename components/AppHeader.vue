@@ -1,206 +1,260 @@
 <template>
-  <header class="bg-blur backdrop-blur-md shadow-lg border-b border-white/10 dark:border-white/10">
+  <header class="app-header" role="banner">
     <div class="container mx-auto px-4">
       <div class="flex items-center justify-between h-16">
         <!-- Logo and Brand -->
-        <div class="flex items-center space-x-4">
-          <NuxtLink to="/" class="flex items-center space-x-2 hover:opacity-80 transition-opacity">
-            <div class="w-8 h-8 bg-red-600 rounded-md flex items-center justify-center">
-              <span class="text-white font-bold text-sm">S</span>
-            </div>
-            <span class="font-bold text-xl text-gray-900 dark:text-white">
-              Supreme Tracker
-            </span>
-          </NuxtLink>
-        </div>
+        <Logo />
 
-        <!-- Navigation Links -->
-        <nav class="hidden md:flex items-center space-x-6">
-          <NuxtLink 
-            to="/" 
-            class="text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white transition-colors"
-            active-class="text-red-600 dark:text-red-400 font-medium"
-          >
-            Browse
-          </NuxtLink>
-          <NuxtLink 
-            to="/trending" 
-            class="text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white transition-colors"
-            active-class="text-red-600 dark:text-red-400 font-medium"
-          >
-            Trending
-          </NuxtLink>
-          <NuxtLink 
-            to="/alerts" 
-            class="text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white transition-colors"
-            active-class="text-red-600 dark:text-red-400 font-medium"
-          >
-            Alerts
-          </NuxtLink>
-        </nav>
+        <!-- Desktop Navigation -->
+        <DesktopNav 
+          :nav-items="navItems"
+          :current-path="currentPath"
+          class="hidden md:flex"
+        />
 
         <!-- Search Bar -->
-        <div class="hidden lg:flex flex-1 max-w-md mx-8">
-          <div class="relative w-full">
-            <input
-              v-model="searchQuery"
-              type="text"
-              placeholder="Search Supreme items..."
-              class="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
-              @keyup.enter="handleSearch"
-            >
-            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-              <svg class="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-              </svg>
-            </div>
-          </div>
-        </div>
-
-        <!-- XP Counter -->
-        <GlassButton
-          class="hidden md:inline-flex bg-blur shadow-inner px-4 py-2 mr-4 cursor-pointer animate-glow-pulse"
-          @click="user.addXp(10)"
-        >
-          💎 {{ user.xp }} XP
-        </GlassButton>
+        <SearchBar 
+          v-model="searchQuery"
+          @search="handleSearch"
+          class="hidden lg:flex flex-1 max-w-md mx-8"
+        />
 
         <!-- User Actions -->
-        <div class="flex items-center space-x-4">
-          <!-- Dark Mode Toggle -->
-          <button
-            @click="toggleDarkMode"
-            class="p-2 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 transition-colors"
-            aria-label="Toggle dark mode"
-          >
-            <svg v-if="isDark" class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
-            </svg>
-            <svg v-else class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
-            </svg>
-          </button>
+        <div class="flex items-center gap-4">
+          <!-- XP Counter -->
+          <XPCounter 
+            :xp="userXp"
+            :level="userLevel"
+            class="hidden md:flex"
+            @click="handleXPClick"
+          />
 
-          <!-- Account Button -->
-          <button 
-            @click="handleAccountClick" 
-            class="px-4 py-2 border border-red-600 text-red-600 font-medium rounded-lg hover:bg-red-600 hover:text-white transition-colors duration-200"
-          >
-            Account
-          </button>
+          <!-- Quick Actions -->
+          <QuickActions 
+            :is-dark="isDark"
+            :is-authenticated="isAuthenticated"
+            @toggle-dark="toggleDark"
+            @account-click="handleAccountClick"
+          />
 
-          <!-- Mobile Menu Button -->
-          <button
-            @click="mobileMenuOpen = !mobileMenuOpen"
-            class="md:hidden p-2 text-gray-500 dark:text-gray-400"
-            aria-label="Toggle mobile menu"
-          >
-            <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
-            </svg>
-          </button>
+          <!-- Mobile Menu Toggle -->
+          <MobileMenuToggle 
+            v-model="mobileMenuOpen"
+            class="md:hidden"
+          />
         </div>
       </div>
 
       <!-- Mobile Menu -->
-      <div v-if="mobileMenuOpen" class="md:hidden border-t border-gray-200 dark:border-gray-700 py-4">
-        <!-- Mobile Search -->
-        <div class="mb-4">
-          <input
-            v-model="searchQuery"
-            type="text"
-            placeholder="Search Supreme items..."
-            class="w-full pl-4 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
-            @keyup.enter="handleSearch"
-          >
-        </div>
-
-        <!-- Mobile Navigation -->
-        <nav class="space-y-2">
-          <NuxtLink 
-            to="/" 
-            class="block py-2 text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white"
-            @click="mobileMenuOpen = false"
-          >
-            Browse
-          </NuxtLink>
-          <NuxtLink 
-            to="/trending" 
-            class="block py-2 text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white"
-            @click="mobileMenuOpen = false"
-          >
-            Trending
-          </NuxtLink>
-          <NuxtLink 
-            to="/alerts" 
-            class="block py-2 text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white"
-            @click="mobileMenuOpen = false"
-          >
-            Alerts
-          </NuxtLink>
-        </nav>
-      </div>
+      <MobileMenu 
+        v-if="mobileMenuOpen"
+        v-model:search-query="searchQuery"
+        :nav-items="navItems"
+        :current-path="currentPath"
+        @search="handleSearch"
+        @navigate="handleMobileNavigate"
+      />
     </div>
+
+    <!-- Progress Bar -->
+    <NavigationProgress v-if="navigationLoading" />
   </header>
 </template>
 
-<script setup>
-import { useUserStore } from '~/stores/user'
-const router = useRouter()
+<script setup lang="ts">
+import { ref, computed, watch, onUnmounted } from 'vue'
+import { useDark, useToggle } from '@vueuse/core'
+import { useEventListener } from '@vueuse/core'
 
-// Reactive state
+// Components (commented out until created)
+// import Logo from './header/Logo.vue'
+// import DesktopNav from './header/DesktopNav.vue'
+// import SearchBar from './header/SearchBar.vue'
+// import XPCounter from './header/XPCounter.vue'
+// import QuickActions from './header/QuickActions.vue'
+// import MobileMenuToggle from './header/MobileMenuToggle.vue'
+// import MobileMenu from './header/MobileMenu.vue'
+// import NavigationProgress from './header/NavigationProgress.vue'
+
+// Composables
+const router = useRouter()
+const route = useRoute()
+const { user, isAuthenticated } = useAuth()
+const { trackEvent } = useAnalytics()
+const { showNotification } = useNotifications()
+
+// Types
+interface NavItem {
+  path: string
+  label: string
+  icon?: string
+  badge?: number | string
+}
+
+// State
 const searchQuery = ref('')
 const mobileMenuOpen = ref(false)
-const isDark = ref(false)
-// User store for XP/levels
-const user = useUserStore()
+const navigationLoading = ref(false)
 
-// Initialize dark mode state from localStorage on client side
-onMounted(() => {
-  if (process.client) {
-    isDark.value = localStorage.getItem('darkMode') === 'true' || 
-      (!localStorage.getItem('darkMode') && window.matchMedia('(prefers-color-scheme: dark)').matches)
-    updateDarkMode()
-  }
+// Dark mode with VueUse
+const isDark = useDark({
+  selector: 'html',
+  attribute: 'class',
+  valueDark: 'dark',
+  valueLight: ''
 })
+const toggleDark = useToggle(isDark)
 
-// Toggle dark mode
-const toggleDarkMode = () => {
-  isDark.value = !isDark.value
-  updateDarkMode()
-  if (process.client) {
-    localStorage.setItem('darkMode', isDark.value.toString())
+// User XP and level (safe access)
+const userXp = computed(() => (user.value as any)?.xp || user.value?.gamification?.xp || 0)
+const userLevel = computed(() => (user.value as any)?.level || user.value?.gamification?.level || 1)
+const alertCount = computed(() => (user.value as any)?.alertCount || 0)
+
+// Navigation items
+const navItems = computed<NavItem[]>(() => [
+  { 
+    path: '/', 
+    label: 'Browse', 
+    icon: 'grid' 
+  },
+  { 
+    path: '/trending', 
+    label: 'Trending', 
+    icon: 'trending',
+    badge: 'NEW'
+  },
+  { 
+    path: '/alerts', 
+    label: 'Alerts', 
+    icon: 'bell',
+    badge: alertCount.value || undefined
+  }
+])
+
+const currentPath = computed(() => route.path)
+
+// Methods
+const handleSearch = (query?: string) => {
+  const searchTerm = query || searchQuery.value.trim()
+  
+  if (!searchTerm) {
+    showNotification({
+      type: 'warning',
+      message: 'Please enter a search term'
+    })
+    return
+  }
+  
+  // Track search
+  trackEvent('search_performed', {
+    query: searchTerm,
+    source: 'header'
+  })
+  
+  // Navigate to search results
+  router.push({
+    path: '/search',
+    query: { q: searchTerm }
+  })
+  
+  // Close mobile menu
+  mobileMenuOpen.value = false
+  
+  // Clear search on navigation
+  searchQuery.value = ''
+}
+
+const handleAccountClick = () => {
+  if (isAuthenticated.value) {
+    router.push('/account')
+  } else {
+    router.push('/auth/login')
+  }
+  
+  trackEvent('account_clicked', {
+    authenticated: isAuthenticated.value
+  })
+}
+
+const handleXPClick = () => {
+  // Easter egg: Add bonus XP
+  if (user.value && typeof (user.value as any).addXp === 'function') {
+    (user.value as any).addXp(10)
+    showNotification({
+      type: 'success',
+      message: '+10 XP! Keep exploring!'
+    })
+    
+    trackEvent('xp_easter_egg_triggered')
   }
 }
 
-// Update DOM dark mode class
-const updateDarkMode = () => {
-  if (process.client) {
-    if (isDark.value) {
-      document.documentElement.classList.add('dark')
-    } else {
-      document.documentElement.classList.remove('dark')
-    }
-  }
+const handleMobileNavigate = () => {
+  mobileMenuOpen.value = false
 }
 
-// Handle search
-const handleSearch = () => {
-  if (searchQuery.value.trim()) {
-    router.push(`/search?q=${encodeURIComponent(searchQuery.value)}`)
+// Keyboard shortcuts
+useEventListener('keydown', (e: KeyboardEvent) => {
+  // Cmd/Ctrl + K for search focus
+  if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+    e.preventDefault()
+    const searchInput = document.querySelector<HTMLInputElement>('.search-input')
+    searchInput?.focus()
+    
+    trackEvent('keyboard_shortcut_used', {
+      shortcut: 'cmd_k_search'
+    })
+  }
+  
+  // Escape to close mobile menu
+  if (e.key === 'Escape' && mobileMenuOpen.value) {
     mobileMenuOpen.value = false
   }
-}
+})
 
-// Handle account click
-const handleAccountClick = () => {
-  // TODO: Implement authentication or account management
-  router.push('/account')
-}
+// Navigation loading indicator
+router.beforeEach(() => {
+  navigationLoading.value = true
+})
 
-// Close mobile menu on route change
-const route = useRoute()
-watch(() => route.path, () => {
+router.afterEach(() => {
+  navigationLoading.value = false
   mobileMenuOpen.value = false
 })
-</script> 
+
+// Persist dark mode preference
+watch(isDark, (value) => {
+  trackEvent('theme_changed', {
+    theme: value ? 'dark' : 'light'
+  })
+})
+
+// Accessibility: Trap focus in mobile menu
+watch(mobileMenuOpen, (isOpen) => {
+  if (isOpen) {
+    // Prevent body scroll
+    document.body.style.overflow = 'hidden'
+  } else {
+    // Restore body scroll
+    document.body.style.overflow = ''
+  }
+})
+
+// Cleanup
+onUnmounted(() => {
+  document.body.style.overflow = ''
+})
+</script>
+
+<style scoped>
+.app-header {
+  @apply bg-blur backdrop-blur-md shadow-lg;
+  @apply border-b border-white/10 dark:border-white/10;
+  @apply sticky top-0 z-40;
+}
+
+/* Smooth transitions */
+.app-header :deep(*) {
+  @apply transition-colors duration-200;
+}
+</style> 

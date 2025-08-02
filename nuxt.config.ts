@@ -100,30 +100,6 @@ export default defineNuxtConfig({
     errorHandler: '~/error'
   },
 
-  // Security headers
-  security: {
-    headers: {
-      crossOriginEmbedderPolicy: process.env.NODE_ENV === 'development' ? 'unsafe-none' : 'require-corp',
-      contentSecurityPolicy: {
-        'img-src': ['self', 'data:', 'https:', 'blob:'],
-        'script-src': ['self', 'https:', 'unsafe-inline', 'unsafe-eval'],
-        'style-src': ['self', 'https:', 'unsafe-inline'],
-        'font-src': ['self', 'https:', 'data:'],
-        'connect-src': ['self', 'https:', process.env.NUXT_PUBLIC_API_BASE_URL || 'http://localhost:8080']
-      },
-      permissionsPolicy: {
-        camera: ['none'],
-        microphone: ['none'],
-        geolocation: ['none']
-      }
-    },
-    rateLimiter: {
-      tokensPerInterval: 150,
-      interval: 'hour',
-      fireImmediately: false
-    }
-  },
-
   // Performance optimizations
   experimental: {
     viewTransition: false,
@@ -174,20 +150,6 @@ export default defineNuxtConfig({
         { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' },
         { rel: 'apple-touch-icon', sizes: '180x180', href: '/apple-touch-icon.png' },
         { rel: 'manifest', href: '/manifest.json' }
-      ],
-      script: [
-        // Structured data
-        {
-          type: 'application/ld+json',
-          children: JSON.stringify({
-            '@context': 'https://schema.org',
-            '@type': 'WebApplication',
-            name: 'Supreme Price Tracker',
-            description: 'Real-time Supreme streetwear price tracking',
-            applicationCategory: 'Shopping',
-            operatingSystem: 'Web'
-          })
-        }
       ]
     },
     
@@ -206,11 +168,6 @@ export default defineNuxtConfig({
 
   // Hooks
   hooks: {
-    'render:route': (url, result) => {
-      if (result.error) {
-        console.error(`Error rendering ${url}:`, result.error)
-      }
-    },
     'build:before': () => {
       console.log('🚀 Starting Supreme Price Tracker build...')
     },
