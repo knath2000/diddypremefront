@@ -36,7 +36,6 @@ import { ref, watch, nextTick, onUnmounted } from 'vue'
 import { useFocusTrap } from '@vueuse/integrations/useFocusTrap'
 
 interface Props {
-  modelValue: boolean
   closeOnBackdrop?: boolean
 }
 
