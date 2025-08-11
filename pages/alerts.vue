@@ -21,42 +21,17 @@
           We're building an intelligent alert system that will notify you when prices hit your target ranges.
         </p>
         <div class="space-y-2 text-sm text-blue-600 dark:text-blue-400">
-          <p>🎯 Custom price targets</p>
-          <p>📱 Instant notifications</p>
-          <p>📊 Historical price context</p>
-          <p>🤖 AI-powered recommendations</p>
+          <p v-for="item in bannerBenefits" :key="item">{{ item }}</p>
         </div>
       </div>
 
       <!-- Features Preview -->
       <div class="grid md:grid-cols-2 gap-8 mt-12">
-        <div class="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6">
-          <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-3">
-            Price Drop Alerts
-          </h3>
-          <p class="text-gray-600 dark:text-gray-400 mb-4">
-            Get notified when items drop below your target price across all platforms.
-          </p>
-          <div class="text-sm text-gray-500 dark:text-gray-500">
-            <p>✓ Multi-platform monitoring</p>
-            <p>✓ Percentage-based thresholds</p>
-            <p>✓ Historical price context</p>
-          </div>
-        </div>
-
-        <div class="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6">
-          <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-3">
-            Restock Notifications
-          </h3>
-          <p class="text-gray-600 dark:text-gray-400 mb-4">
-            Know immediately when sold-out items become available again.
-          </p>
-          <div class="text-sm text-gray-500 dark:text-gray-500">
-            <p>✓ Real-time availability tracking</p>
-            <p>✓ Size-specific alerts</p>
-            <p>✓ Platform preference settings</p>
-          </div>
-        </div>
+        <FeatureCard
+          v-for="feature in alertFeatures"
+          :key="feature.title"
+          v-bind="feature"
+        />
       </div>
 
       <!-- Back to Browse -->
@@ -72,7 +47,49 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
+import FeatureCard from '~/components/ui/FeatureCard.vue'
+
+interface Feature {
+  title: string
+  description: string
+  benefits: string[]
+  icon?: string
+  color?: string
+}
+
+const bannerBenefits = [
+  '🎯 Custom price targets',
+  '📱 Instant notifications',
+  '📊 Historical price context',
+  '🤖 AI-powered recommendations'
+]
+
+const alertFeatures: Feature[] = [
+  {
+    title: 'Price Drop Alerts',
+    description: 'Get notified when items drop below your target price across all platforms.',
+    benefits: [
+      'Multi-platform monitoring',
+      'Percentage-based thresholds',
+      'Historical price context'
+    ],
+    icon: '📉',
+    color: 'blue'
+  },
+  {
+    title: 'Restock Notifications',
+    description: 'Know immediately when sold-out items become available again.',
+    benefits: [
+      'Real-time availability tracking',
+      'Size-specific alerts',
+      'Platform preference settings'
+    ],
+    icon: '🔄',
+    color: 'green'
+  }
+]
+
 // Meta tags for SEO
 useHead({
   title: 'Price Alerts - Supreme Price Tracker',

@@ -97,7 +97,6 @@ export default defineNuxtConfig({
     compressPublicAssets: true,
     
     // Error handling
-    errorHandler: '~/error'
   },
 
   // Performance optimizations
