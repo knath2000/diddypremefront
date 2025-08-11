@@ -49,7 +49,7 @@ const { data: snapResp, pending } = await useFetch(() => `${config.public.apiBas
   server: false,
 });
 
-const snapshot = computed(() => snapResp.value?.data || null);
+const snapshot = computed(() => (snapResp.value as any)?.data || null);
 
 useHead({
   title: `StockX Market – ${itemId}`,

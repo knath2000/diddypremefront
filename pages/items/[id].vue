@@ -1,164 +1,382 @@
 <template>
-  <div class="container mx-auto px-4 py-8">
-    <div v-if="pending" class="text-center">
-      Loading item details...
-    </div>
-    <div v-else-if="item">
-      <h1 class="text-4xl font-bold mb-4 text-gray-900 dark:text-white">{{ item.title }}</h1>
-      <div class="flex flex-wrap items-center gap-4 text-gray-600 dark:text-gray-400 mb-6">
-        <span v-if="item.brand">Brand: {{ item.brand }}</span>
-        <span v-if="item.season" class="inline-block bg-gray-100 dark:bg-gray-700 px-2 py-1 rounded text-xs uppercase tracking-wide">{{ item.season }}</span>
-        <span v-if="retail">Retail: ${{ retail }}</span>
-      </div>
+  <div class="item-detail-page">
+    <!-- Loading State -->
+    <ItemDetailSkeleton v-if="pending" />
 
-      <div v-if="(item.images && item.images.length) || item.image_url || item.imageUrl" class="mb-6">
-        <img :src="currentImg" :alt="item.title" class="w-full max-w-lg mx-auto rounded-lg shadow-md" />
+    <!-- Error State -->
+    <ErrorState 
+      v-else-if="error || !item"
+      :error="error"
+      title="Item not found"
+      description="The item you are looking for does not exist or has been removed."
+      :show-retry="!!error"
+      @retry="refresh"
+    />
 
-        <div v-if="item.images?.length > 1" class="flex gap-2 mt-4 justify-center flex-wrap">
-          <button
-            v-for="img in item.images"
-            :key="img.url"
-            class="border-2 rounded overflow-hidden w-20 h-20 flex-shrink-0"
-            :class="{ 'border-red-600': img.url === currentImg }"
-            @click="currentImg = img.url"
-          >
-            <img :src="img.url" class="object-cover w-full h-full" />
-          </button>
-        </div>
-      </div>
+    <!-- Item Details -->
+    <div v-else class="container mx-auto px-4 py-8">
+      <!-- Breadcrumbs -->
+      <Breadcrumbs :items="breadcrumbs" class="mb-6" />
 
-      <div v-if="item.releaseWeek || item.releaseDate" class="mb-6 text-sm text-gray-600 dark:text-gray-400">
-        <span v-if="item.releaseWeek">Release: {{ item.releaseWeek }}</span>
-        <span v-if="item.releaseDate" class="ml-2">({{ new Date(item.releaseDate).toLocaleDateString() }})</span>
-      </div>
+      <!-- Item Header -->
+      <ItemDetailHeader 
+        :item="item"
+        :best-price="bestPrice"
+        @share="handleShare"
+        @favorite="handleFavorite"
+      />
 
-      <div v-if="item.colors?.length" class="mb-8">
-        <h3 class="font-semibold text-lg text-gray-900 dark:text-white mb-2">Color Options</h3>
-        <ul class="flex flex-wrap gap-2">
-          <li v-for="c in item.colors" :key="c" class="px-3 py-1 bg-gray-100 dark:bg-gray-700 rounded text-sm">
-            {{ c }}
-          </li>
-        </ul>
-      </div>
+      <!-- Image Gallery -->
+      <ItemImageGallery 
+        :images="itemImages"
+        :title="item.title"
+        class="mb-8"
+      />
 
-      <!-- Best market price across variants/platforms -->
-      <div v-if="bestPrice" class="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg p-4 mb-8 max-w-lg mx-auto">
-        <p class="text-sm text-green-700 dark:text-green-300 mb-1">Lowest Ask</p>
-        <p class="text-3xl font-bold text-green-900 dark:text-green-100">${{ bestPrice.price.toLocaleString() }} <span class="text-lg font-medium">on {{ bestPrice.platform }}</span></p>
-      </div>
+      <!-- Price Overview -->
+      <PriceOverview 
+        v-if="hasPrices"
+        :best-price="bestPrice"
+        :price-summary="priceSummary"
+        :last-updated="lastPriceUpdate"
+        class="mb-8"
+      />
 
-      <h2 class="text-2xl font-semibold mb-4 text-gray-900 dark:text-white">Variants</h2>
-      <div v-if="item.variants.length > 0" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        <div v-for="variant in item.variants" :key="variant.id" class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-sm">
-          <h3 class="font-medium text-lg text-gray-900 dark:text-white">Size: {{ variant.size }}</h3>
-          <p class="text-gray-600 dark:text-gray-400">Color: {{ variant.color }}</p>
+      <!-- Variants Section -->
+      <VariantsSection 
+        v-if="item.variants.length > 0"
+        :variants="item.variants"
+        :selected-variant="selectedVariant"
+        @select="handleVariantSelect"
+        class="mb-8"
+      />
 
-          <div class="mt-3 space-y-2">
-            <div v-if="getLatestStockXPrice(variant, 'lowestAsk')" class="text-lg">
-              <span class="font-bold text-emerald-600 dark:text-emerald-400">${{ getLatestStockXPrice(variant, 'lowestAsk') }}</span>
-              <span class="text-sm text-gray-500 dark:text-gray-400"> Lowest Ask (StockX)</span>
-            </div>
-            <div v-else-if="getLatestStockXPrice(variant, 'lastSale')" class="text-lg">
-              <span class="font-bold text-gray-800 dark:text-gray-200">${{ getLatestStockXPrice(variant, 'lastSale') }}</span>
-              <span class="text-sm text-gray-500 dark:text-gray-400"> Last Sale (StockX)</span>
-            </div>
+      <!-- Price History Chart -->
+      <PriceHistorySection 
+        v-if="selectedVariant"
+        :item-id="item.id"
+        :variant-id="selectedVariant.id"
+        class="mb-8"
+      />
 
-            <div v-if="variant.prices.length > 0" class="text-sm">
-              <span class="font-semibold text-gray-700 dark:text-gray-300">${{ variant.prices[0].price_usd.toLocaleString() }}</span>
-              <span class="text-xs text-gray-500 dark:text-gray-400 ml-1">on {{ variant.prices[0].platform }}</span>
-            </div>
-          </div>
+      <!-- Related Actions -->
+      <ItemActions 
+        :item="item"
+        :variant="selectedVariant"
+        @set-alert="handleSetAlert"
+        @view-history="handleViewHistory"
+      />
 
-          <NuxtLink :to="`/items/${item.id}/prices?variantId=${variant.id}`" class="block text-right text-red-600 hover:underline mt-2 text-sm">
-            Price History
-          </NuxtLink>
-        </div>
-      </div>
-      <p v-else class="text-gray-600 dark:text-gray-400">No variants found for this item.</p>
-
-      <!-- Link to StockX market page -->
-      <div class="mt-8 text-center">
-        <NuxtLink :to="`/items/${item.id}/stockx`" class="inline-block px-6 py-3 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 transition-colors">
-          View StockX Market
-        </NuxtLink>
-      </div>
-
-    </div>
-    <div v-else class="text-center py-12">
-      <h3 class="text-xl font-medium text-gray-900 dark:text-white mb-2">Item not found</h3>
-      <p class="text-gray-600 dark:text-gray-400 mb-6">The item you are looking for does not exist or has been removed.</p>
-      <NuxtLink to="/" class="px-6 py-3 border-2 border-red-600 text-red-600 font-semibold rounded-lg hover:bg-red-600 hover:text-white transition-colors duration-200">
-        Go to Homepage
-      </NuxtLink>
+      <!-- Related Items -->
+      <RelatedItems 
+        v-if="relatedItems.length > 0"
+        :items="relatedItems"
+        class="mt-12"
+      />
     </div>
   </div>
 </template>
 
-<script setup>
-import { useRoute } from 'vue-router';
-import { ref, watch } from 'vue';
+<script setup lang="ts">
+import { ref, computed } from 'vue'
+import type { Item, Variant, Price } from '~/types'
 
-const route = useRoute();
-const config = useRuntimeConfig();
-const itemId = route.params.id;
+// Components (commented out until created)
+// import ItemDetailSkeleton from '~/components/item/ItemDetailSkeleton.vue'
+import ErrorState from '~/components/ui/ErrorState.vue'
+// import Breadcrumbs from '~/components/ui/Breadcrumbs.vue'
+// import ItemDetailHeader from '~/components/item/ItemDetailHeader.vue'
+// import ItemImageGallery from '~/components/item/ItemImageGallery.vue'
+// import PriceOverview from '~/components/item/PriceOverview.vue'
+// import VariantsSection from '~/components/item/VariantsSection.vue'
+// import PriceHistorySection from '~/components/item/PriceHistorySection.vue'
+// import ItemActions from '~/components/item/ItemActions.vue'
+// import RelatedItems from '~/components/item/RelatedItems.vue'
+
+// Composables
+const route = useRoute()
+const router = useRouter()
+const config = useRuntimeConfig()
+const { formatPrice } = usePriceFormatter()
+const { trackEvent } = useAnalytics()
+const { showNotification } = useNotifications()
+const { addFavorite, removeFavorite, isFavorite } = useFavorites()
+
+// Extract item ID
+const itemId = computed(() => String(route.params.id))
 
 // Fetch item details
-const { data: itemResponse, pending } = await useFetch(() => `${config.public.apiBase}/items/${itemId}`, {
-  // server: false,
-});
-
-// Fetch StockX snapshot (latest market data)
-const { data: stockxResp } = await useFetch(() => `${config.public.apiBase}/items/${itemId}/stockx`, {
-  lazy: true,
-  server: false,
-});
-
-const getLatestStockXPrice = (variant, type) => {
-  if (!variant.stockxPrices || variant.stockxPrices.length === 0) {
-    return null;
+const { 
+  data: itemResponse, 
+  pending, 
+  error,
+  refresh 
+} = await useAsyncData(
+  `item-${itemId.value}`,
+  () => $fetch<{ data: Item }>(`${config.public.apiBase}/items/${itemId.value}`),
+  {
+    transform: (response) => response?.data || null
   }
-  const stockxRecord = variant.stockxPrices.find(p => p.type === type);
-  return stockxRecord ? stockxRecord.price : null;
-};
+)
 
-const item = computed(() => itemResponse.value?.data || null);
-
-const currentImg = ref('');
-
-watch(item, (val) => {
-  if (!val) return;
-  if (val.images?.length) {
-    currentImg.value = val.images[0].url;
-  } else {
-    currentImg.value = val.image_url || val.imageUrl || '';
+// Fetch StockX data
+const { data: stockxData } = await useLazyAsyncData(
+  `stockx-${itemId.value}`,
+  () => $fetch(`${config.public.apiBase}/items/${itemId.value}/stockx`),
+  {
+    server: false,
+    transform: (response: any) => response?.data || null
   }
-}, { immediate: true });
+)
 
-// retail extracted from first price in variants with askOrBid === 'retail' placeholder
-const retail = computed(() => {
-  const v = item.value?.variants?.[0];
-  if (!v) return null;
-  const price = v.prices?.find(p => p.ask_or_bid === 'ASK' || p.priceType === 'retail');
-  return price?.price_usd || null;
-});
+// Fetch related items
+const { data: relatedItems } = await useLazyAsyncData(
+  `related-${itemId.value}`,
+  () => $fetch<{ data: Item[] }>(`${config.public.apiBase}/items/${itemId.value}/related`),
+  {
+    server: false,
+    default: () => [],
+    transform: (response) => response?.data || []
+  }
+)
 
-// gather best lowest price across variants
+// State
+const selectedVariant = ref<Variant | null>(null)
+const item = computed(() => itemResponse.value)
+
+// Computed properties
+const itemImages = computed(() => {
+  if (!item.value) return []
+  
+  const images = []
+  
+  // Add primary image
+  const primaryImage = item.value.imageUrl || item.value.image_url
+  if (primaryImage) {
+    images.push({ id: '1', url: primaryImage, isPrimary: true })
+  }
+  
+  // Add additional images
+  if (item.value.images?.length) {
+    images.push(...item.value.images)
+  }
+  
+  return images.length ? images : [{ id: 'placeholder', url: '/images/placeholder.png' }]
+})
+
+const breadcrumbs = computed(() => [
+  { text: 'Home', to: '/' },
+  { text: 'Items', to: '/items' },
+  { text: item.value?.title || 'Loading...', to: '' }
+])
+
+const hasPrices = computed(() => {
+  return item.value?.variants.some(v => v.prices && v.prices.length > 0) || !!stockxData.value
+})
+
+const allPrices = computed(() => {
+  if (!item.value) return []
+  
+  const prices: Array<{ price: number; platform: string }> = []
+  
+  // Collect database prices
+  item.value.variants.forEach(variant => {
+    variant.prices?.forEach(price => {
+      prices.push({ 
+        price: price.price_usd, 
+        platform: price.platform 
+      })
+    })
+  })
+  
+  // Add StockX prices
+  if (stockxData.value?.lowestAsk?.price) {
+    prices.push({ 
+      price: stockxData.value.lowestAsk.price, 
+      platform: 'stockx' 
+    })
+  }
+  
+  return prices
+})
+
 const bestPrice = computed(() => {
-  // Combine existing platforms and StockX lowestAsk
-  const inDb = item.value?.variants?.flatMap(v => v.prices || []) || [];
-  const stockxLowest = stockxResp.value?.data?.lowestAsk?.price ?? null;
-  const combined = [...inDb.map(p => ({ price: p.price_usd, platform: p.platform })),
-    ...(stockxLowest ? [{ price: stockxLowest, platform: 'stockx' }] : []),
-  ];
-  if (!combined.length) return null;
-  combined.sort((a,b)=>a.price-b.price);
-  return combined[0];
-});
+  if (allPrices.value.length === 0) return null
+  return allPrices.value.reduce((best, current) => 
+    current.price < best.price ? current : best
+  )
+})
 
+const priceSummary = computed(() => {
+  const prices = allPrices.value
+  if (prices.length === 0) return null
+  
+  const values = prices.map(p => p.price)
+  return {
+    min: Math.min(...values),
+    max: Math.max(...values),
+    avg: values.reduce((a, b) => a + b, 0) / values.length,
+    count: values.length
+  }
+})
+
+const lastPriceUpdate = computed(() => {
+  // Get most recent price update time
+  const times: Date[] = []
+  
+  item.value?.variants.forEach(variant => {
+    variant.prices?.forEach(price => {
+      if (price.captured_at) {
+        times.push(new Date(price.captured_at))
+      }
+    })
+  })
+  
+  return times.length > 0 
+    ? Math.max(...times.map(t => t.getTime()))
+    : null
+})
+
+// Methods
+const handleVariantSelect = (variant: Variant) => {
+  selectedVariant.value = variant
+  trackEvent('variant_selected', {
+    item_id: item.value?.id,
+    variant_id: variant.id,
+    size: variant.size,
+    color: variant.color
+  })
+}
+
+const handleShare = async () => {
+  if (!item.value) return
+  
+  try {
+    await navigator.share({
+      title: item.value.title,
+      text: `Check out ${item.value.title} on Supreme Price Tracker`,
+      url: window.location.href
+    })
+    
+    trackEvent('item_shared', {
+      item_id: item.value.id,
+      method: 'native_share'
+    })
+  } catch (error) {
+    // Fallback to clipboard
+    await navigator.clipboard.writeText(window.location.href)
+    showNotification({
+      type: 'success',
+      message: 'Link copied to clipboard!'
+    })
+    
+    trackEvent('item_shared', {
+      item_id: item.value.id,
+      method: 'clipboard'
+    })
+  }
+}
+
+const handleFavorite = () => {
+  if (!item.value) return
+  
+  const favorited = isFavorite(item.value.id)
+  
+  if (favorited) {
+    removeFavorite(item.value.id)
+    showNotification({
+      type: 'info',
+      message: 'Removed from favorites'
+    })
+  } else {
+    addFavorite(item.value)
+    showNotification({
+      type: 'success',
+      message: 'Added to favorites!'
+    })
+  }
+  
+  trackEvent(favorited ? 'item_unfavorited' : 'item_favorited', {
+    item_id: item.value.id
+  })
+}
+
+const handleSetAlert = () => {
+  router.push({
+    path: '/alerts/create',
+    query: {
+      item_id: item.value?.id,
+      variant_id: selectedVariant.value?.id
+    }
+  })
+}
+
+const handleViewHistory = () => {
+  router.push({
+    path: `/items/${item.value?.id}/prices`,
+    query: selectedVariant.value ? { variantId: selectedVariant.value.id } : {}
+  })
+}
+
+// Initialize
+onMounted(() => {
+  if (item.value) {
+    // Select first variant by default
+    if (item.value.variants.length > 0 && !selectedVariant.value) {
+      const firstVariant = item.value.variants[0]
+      if (firstVariant) {
+        selectedVariant.value = firstVariant
+      }
+    }
+    
+    // Track page view
+    trackEvent('item_detail_viewed', {
+      item_id: item.value.id,
+      item_title: item.value.title,
+      has_prices: hasPrices.value,
+      variant_count: item.value.variants.length
+    })
+  }
+})
+
+// SEO
 useHead({
-  title: item.value ? `${item.value.title} - Supreme Price Tracker` : 'Item Details - Supreme Price Tracker',
-  meta: [
-    { name: 'description', content: item.value ? `Details and prices for ${item.value.title}.` : 'Supreme item details.' }
-  ]
-});
-</script> 
+  title: computed(() => item.value?.title || 'Loading...'),
+  meta: computed(() => [
+    {
+      name: 'description',
+      content: item.value 
+        ? `${item.value.title} - Track prices across StockX, GOAT, and Grailed. ${item.value.season || ''}`
+        : 'Loading item details...'
+    },
+    {
+      property: 'og:title',
+      content: item.value?.title || 'Supreme Item'
+    },
+    {
+      property: 'og:description',
+      content: item.value 
+        ? `Track ${item.value.title} prices in real-time`
+        : 'Real-time price tracking'
+    },
+    {
+      property: 'og:image',
+      content: itemImages.value[0]?.url || '/og-image.png'
+    },
+    {
+      property: 'product:price:amount',
+      content: bestPrice.value?.price.toString() || ''
+    },
+    {
+      property: 'product:price:currency',
+      content: 'USD'
+    }
+  ])
+})
+</script>
+
+<style scoped>
+.item-detail-page {
+  @apply min-h-screen bg-gray-50 dark:bg-gray-900;
+}
+</style> 
