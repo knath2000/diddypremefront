@@ -25,3 +25,7 @@ logs
 
 # Git worktrees (local only)
 .worktrees/
+
+# Vercel build output (do not commit)
+.vercel/
+
