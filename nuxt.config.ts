@@ -1,6 +1,10 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 import tailwindcss from "@tailwindcss/vite";
 
+// Deployment-aware defaults
+const PROD_API_BASE = "https://diddyback-production.up.railway.app"
+const isProdEnv = process.env.VERCEL_ENV === 'production' || process.env.NODE_ENV === 'production'
+
 // Environment variables validation
 const requiredEnvVars = [
   'DATABASE_URL',
@@ -68,7 +72,8 @@ export default defineNuxtConfig({
     
     // Public keys (client-side)
     public: {
-      apiBase: process.env.NUXT_PUBLIC_API_BASE_URL || 'http://localhost:8080',
+      // Default to production API on Vercel prod if no env override is set
+      apiBase: process.env.NUXT_PUBLIC_API_BASE_URL || (isProdEnv ? PROD_API_BASE : 'http://localhost:8080'),
       vercelEnv: process.env.VERCEL_ENV || 'development',
       appVersion: process.env.npm_package_version || '1.0.0',
       sentryDsn: process.env.NUXT_PUBLIC_SENTRY_DSN || ''
