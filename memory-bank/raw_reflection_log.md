@@ -1,6 +1,19 @@
 # Raw Reflection Log
 
 ---
+Date: 2025-08-12
+TaskRef: "Liquid Glass UI foundation + strict-mode fixes + gamification wiring"
+
+Learnings / Notes:
+- Introduced a consistent Liquid Glass (Tahoe/iOS 26) system with tokens and `.lg-*` utilities.
+- Migrated core components to `.lg-surface`, `.lg-elevation-*`, `.lg-edge`, `.lg-pressable` for visual cohesion.
+- Removed `@apply` from component-scoped CSS in `PriceBubble.vue` and `LoadingSpinner.vue` to satisfy Tailwind v4 strict mode.
+- Wired XP via Pinia `useUserStore`; `LevelUpModal` now reliably triggers on level-up events.
+
+Outcome:
+- Cohesive glasmorphism baseline across app; improved accessibility path and motion consistency.
+- Changes pushed to `origin/main`.
+---
 Date: 2025-08-11
 TaskRef: "PR review, squash merges, and build hardening"
 

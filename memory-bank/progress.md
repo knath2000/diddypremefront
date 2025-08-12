@@ -38,3 +38,11 @@
 - Unified `nuxt.config.ts` to PR #2’s structure (Chart.js transpile; removed invalid `nitro.errorHandler`).
 - Added `focus-trap` to satisfy `@vueuse/integrations` SSR build.
 - Verified production build locally (client + server) from merged code.
+
+### UI System Foundation – 2025-08-12
+- Implemented Liquid Glass (Tahoe/iOS 26) glasmorphism base:
+  - Added tokens and utilities in `assets/css/main.css` (`.lg-surface`, `.lg-elevation-[1..5]`, `.lg-edge`, `.lg-reflect`, `.lg-pressable`).
+  - Migrated core components to new `.lg-*` classes: `AppHeader`, `AppFooter`, `GlassCard`, `GlassButton`, `GlassModal`, `LevelUpModal`, `ItemCard`, homepage hero.
+  - Removed Tailwind `@apply` from `PriceBubble.vue` and `LoadingSpinner.vue` per v4 strict-mode guidance.
+- Gamification: Routed XP interactions through Pinia `useUserStore` so `LevelUpModal` triggers on level-ups.
+- Pushed all changes to `origin/main` with a single commit.

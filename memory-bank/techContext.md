@@ -73,6 +73,17 @@
 - **Dark Mode**: CSS variable-based theme switching
 - **Responsive Design**: Mobile-first approach with Tailwind breakpoints
 
+### ✅ UI Design System: Liquid Glass (Tahoe/iOS 26)
+- Tokens added to `assets/css/main.css` (`--lg-*`) for blur, alpha, border, reflection, saturation and shadows.
+- Utilities/classes:
+  - Surfaces: `.lg-surface`
+  - Elevation: `.lg-elevation-[1..5]`
+  - Details: `.lg-edge`, `.lg-reflect`
+  - Interactions: `.lg-pressable`
+- Minimal usage examples:
+  - Card: `<div class="lg-surface lg-elevation-3 lg-edge rounded-2xl p-6">...</div>`
+  - Button: `<button class="lg-surface lg-elevation-2 lg-edge lg-pressable rounded-xl px-4 py-2">...</button>`
+
 ### ✅ Current Project Structure
 ```
 components/

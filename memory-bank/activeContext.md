@@ -13,9 +13,14 @@ The primary focus has shifted from bug fixing to a complete User Interface (UI) 
   - `nuxt.config.ts` aligned to PR #2; invalid `nitro.errorHandler` removed; Chart.js transpile ensured.
   - `focus-trap` added for `@vueuse/integrations`.
 
+- **Liquid Glass UI Foundation (Tahoe/iOS 26)**:
+  - Implemented unified glasmorphism tokens and utilities in `assets/css/main.css` (`.lg-surface`, `.lg-elevation-[1..5]`, `.lg-edge`, `.lg-reflect`, `.lg-pressable`).
+  - Migrated core components to the new system: `AppHeader.vue`, `AppFooter.vue`, `GlassCard.vue`, `GlassButton.vue`, `GlassModal.vue`, `LevelUpModal.vue`, `ItemCard.vue`, and `pages/index.vue` hero.
+  - Removed Tailwind `@apply` from `PriceBubble.vue` and `LoadingSpinner.vue` to comply with v4 strict mode.
+  - Wired XP interactions to `useUserStore` so `LevelUpModal` reliably triggers on level-ups.
+
 ## Immediate Next Steps
-1.  **Implement New Design System**: Begin executing on the "colorful glasmorphism" redesign plan.
-    -   Update Tailwind CSS configuration with a new, vibrant color palette.
-    -   Redesign core components like `ItemCard.vue` and `AppHeader.vue` to use blurred, semi-transparent backgrounds and other glassmorphism effects.
-2.  **Integrate Animation**: Introduce an animation library (like VueUse's `useMotion`) to add fluid page transitions and interactive micro-animations.
-3.  **Build Gamification UI**: Start scaffolding the frontend components for the new gamification features, such as "Hype Point" notifications and achievement badges. 
+1. **Complete Adoption**: Migrate remaining components to `.lg-*` utilities; deprecate ad-hoc glass classes for consistency.
+2. **Tints & Contrast**: Add optional tint variants (platform colors) and run dark/light contrast audit for accessibility.
+3. **Micro‑interactions**: Standardize motion with `@vueuse/motion` presets (press, hover, page transitions) across surfaces.
+4. **Gamification UI**: Build out XP progress ring integration and achievement flows using the new glass surfaces.
