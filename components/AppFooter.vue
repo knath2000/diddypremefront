@@ -78,10 +78,23 @@ const legalLinks: Link[] = [
 
 <style scoped>
 .app-footer {
-  @apply bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 mt-auto;
+  background-color: #ffffff;
+  border-top: 1px solid #e5e7eb;
+  margin-top: auto;
+}
+@media (prefers-color-scheme: dark) {
+  .app-footer {
+    background-color: #1f2937;
+    border-top-color: #374151;
+  }
 }
 
 .footer-heading {
-  @apply font-semibold text-gray-900 dark:text-white mb-4;
+  font-weight: 600;
+  color: #111827;
+  margin-bottom: 1rem;
+}
+@media (prefers-color-scheme: dark) {
+  .footer-heading { color: #ffffff; }
 }
 </style> 
