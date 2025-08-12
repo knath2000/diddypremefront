@@ -377,6 +377,12 @@ useHead({
 
 <style scoped>
 .item-detail-page {
-  @apply min-h-screen bg-gray-50 dark:bg-gray-900;
+  min-height: 100vh;
+  background-color: #f9fafb; /* gray-50 */
 }
-</style> 
+@media (prefers-color-scheme: dark) {
+  .item-detail-page {
+    background-color: #111827; /* gray-900 */
+  }
+}
+</style>
