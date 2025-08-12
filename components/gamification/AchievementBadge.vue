@@ -98,11 +98,13 @@ const iconComponent = computed(() => {
 }
 
 .achievement-badge--loading {
-  @apply opacity-50 pointer-events-none;
+  opacity: 0.5;
+  pointer-events: none;
 }
 
 .achievement-badge--unlocked {
-  @apply opacity-100 grayscale-0;
+  opacity: 1;
+  filter: grayscale(0);
 }
 
 .achievement-badge--rare {
@@ -121,31 +123,17 @@ const iconComponent = computed(() => {
   }
 }
 
-.achievement-badge--sm {
-  @apply w-16 h-20 text-xs;
-}
+.achievement-badge--sm { width: 4rem; height: 5rem; font-size: 0.75rem; }
 
-.achievement-badge--md {
-  @apply w-20 h-24 text-sm;
-}
+.achievement-badge--md { width: 5rem; height: 6rem; font-size: 0.875rem; }
 
-.achievement-badge--lg {
-  @apply w-24 h-28 text-base;
-}
+.achievement-badge--lg { width: 6rem; height: 7rem; font-size: 1rem; }
 
-.achievement-badge__icon {
-  @apply flex items-center justify-center w-10 h-10;
-}
+.achievement-badge__icon { display: flex; align-items: center; justify-content: center; width: 2.5rem; height: 2.5rem; }
 
-.achievement-badge__title {
-  @apply mt-2 text-center text-white whitespace-pre-line leading-tight;
-}
+.achievement-badge__title { margin-top: 0.5rem; text-align: center; color: #ffffff; white-space: pre-line; line-height: 1.25; }
 
-.achievement-badge__progress {
-  @apply w-full h-1.5 bg-white/20 rounded-full overflow-hidden mt-1;
-}
+.achievement-badge__progress { width: 100%; height: 0.375rem; background: rgba(255,255,255,0.2); border-radius: 9999px; overflow: hidden; margin-top: 0.25rem; }
 
-.achievement-badge__progress-bar {
-  @apply h-full bg-gradient-to-r from-blue-500 to-fuchsia-500 rounded-full transition-all duration-500;
-}
+.achievement-badge__progress-bar { height: 100%; background: linear-gradient(to right, #3b82f6, #d946ef); border-radius: 9999px; transition: all 0.5s ease; }
 </style> 

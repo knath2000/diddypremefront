@@ -56,52 +56,28 @@ const formattedPercentage = computed(() => {
 </script>
 
 <style scoped>
-.trend-indicator {
-  @apply inline-flex items-center gap-0.5;
-}
+.trend-indicator { display: inline-flex; align-items: center; gap: 0.125rem; }
 
-.trend-indicator--sm {
-  @apply text-xs;
-}
+.trend-indicator--sm { font-size: 0.75rem; }
 
-.trend-indicator--md {
-  @apply text-sm;
-}
+.trend-indicator--md { font-size: 0.875rem; }
 
-.trend-indicator--lg {
-  @apply text-base;
-}
+.trend-indicator--lg { font-size: 1rem; }
 
-.trend-arrow {
-  @apply transition-colors duration-200;
-}
+.trend-arrow { transition: color 200ms ease; }
 
-.trend-arrow--up {
-  @apply text-emerald-400;
-}
+.trend-arrow--up { color: #34d399; }
 
-.trend-arrow--down {
-  @apply text-rose-400;
-}
+.trend-arrow--down { color: #fb7185; }
 
-.trend-arrow--neutral {
-  @apply text-gray-400;
-}
+.trend-arrow--neutral { color: #9ca3af; }
 
 /* Size variants for arrows */
-.trend-indicator--sm .trend-arrow {
-  @apply h-3 w-3;
-}
+.trend-indicator--sm .trend-arrow { height: 0.75rem; width: 0.75rem; }
 
-.trend-indicator--md .trend-arrow {
-  @apply h-4 w-4;
-}
+.trend-indicator--md .trend-arrow { height: 1rem; width: 1rem; }
 
-.trend-indicator--lg .trend-arrow {
-  @apply h-5 w-5;
-}
+.trend-indicator--lg .trend-arrow { height: 1.25rem; width: 1.25rem; }
 
-.trend-percentage {
-  @apply font-medium;
-}
+.trend-percentage { font-weight: 500; }
 </style>

@@ -17,14 +17,9 @@ const props = withDefaults(defineProps<Props>(), {
 </script>
 
 <style scoped>
-.loading-spinner {
-  @apply inline-flex items-center justify-center;
-}
+.loading-spinner { display: inline-flex; align-items: center; justify-content: center; }
 
-.spinner {
-  @apply border-4 border-gray-200 dark:border-gray-700 rounded-full animate-spin;
-  border-top-color: var(--color-supreme-red);
-}
+.spinner { border-width: 4px; border-style: solid; border-color: #e5e7eb; border-top-color: var(--color-supreme-red); border-radius: 9999px; animation: spin 1s linear infinite; }
 
 /* Size variants */
 .loading-spinner--sm .spinner {
