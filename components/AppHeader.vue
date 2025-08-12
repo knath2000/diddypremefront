@@ -1,5 +1,5 @@
 <template>
-  <header class="app-header" role="banner">
+  <header class="app-header lg-surface lg-elevation-3 lg-edge" role="banner">
     <div class="container mx-auto px-4">
       <div class="flex items-center justify-between h-16">
         <!-- Logo and Brand -->
@@ -65,6 +65,7 @@
 import { ref, computed, watch, onUnmounted } from 'vue'
 import { useDark, useToggle } from '@vueuse/core'
 import { useEventListener } from '@vueuse/core'
+import { useUserStore } from '~/stores/user'
 
 // Components (commented out until created)
 // import Logo from './header/Logo.vue'
@@ -82,6 +83,7 @@ const route = useRoute()
 const { user, isAuthenticated } = useAuth()
 const { trackEvent } = useAnalytics()
 const { showNotification } = useNotifications()
+const userStore = useUserStore()
 
 // Types
 interface NavItem {
@@ -105,9 +107,9 @@ const isDark = useDark({
 })
 const toggleDark = useToggle(isDark)
 
-// User XP and level (safe access)
-const userXp = computed(() => (user.value as any)?.xp || user.value?.gamification?.xp || 0)
-const userLevel = computed(() => (user.value as any)?.level || user.value?.gamification?.level || 1)
+// User XP and level sourced from Pinia store for LevelUpModal integration
+const userXp = computed(() => userStore.xp)
+const userLevel = computed(() => userStore.level)
 const alertCount = computed(() => (user.value as any)?.alertCount || 0)
 
 // Navigation items
@@ -177,16 +179,13 @@ const handleAccountClick = () => {
 }
 
 const handleXPClick = () => {
-  // Easter egg: Add bonus XP
-  if (user.value && typeof (user.value as any).addXp === 'function') {
-    (user.value as any).addXp(10)
-    showNotification({
-      type: 'success',
-      message: '+10 XP! Keep exploring!'
-    })
-    
-    trackEvent('xp_easter_egg_triggered')
-  }
+  // Easter egg: Add bonus XP via Pinia store so LevelUpModal can react
+  userStore.addXp(10)
+  showNotification({
+    type: 'success',
+    message: '+10 XP! Keep exploring!'
+  })
+  trackEvent('xp_easter_egg_triggered')
 }
 
 const handleMobileNavigate = () => {
@@ -248,11 +247,6 @@ onUnmounted(() => {
 
 <style scoped>
 .app-header {
-  background: rgba(255,255,255,0.65);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -4px rgba(0,0,0,0.1);
-  border-bottom: 1px solid rgba(255,255,255,0.1);
   position: sticky;
   top: 0;
   z-index: 40;

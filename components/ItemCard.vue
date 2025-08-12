@@ -3,7 +3,7 @@
     v-motion
     :initial="{ opacity: 0, y: 50 }"
     :enter="{ opacity: 1, y: 0, transition: { duration: 500 } }"
-    class="bg-blur rounded-2xl overflow-hidden group transform hover:-translate-y-2 transition-transform duration-300"
+    class="lg-surface lg-elevation-2 lg-edge lg-pressable rounded-2xl overflow-hidden group transform hover:-translate-y-2 transition-transform duration-300"
   >
     <!-- Item Image -->
     <div class="aspect-square relative overflow-hidden">

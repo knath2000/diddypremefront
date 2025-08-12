@@ -23,14 +23,17 @@ const props = withDefaults(defineProps<Props>(), {
 
 /* Size variants */
 .loading-spinner--sm .spinner {
-  @apply w-6 h-6;
+  width: 1.5rem;  /* w-6 */
+  height: 1.5rem; /* h-6 */
 }
 
 .loading-spinner--md .spinner {
-  @apply w-10 h-10;
+  width: 2.5rem;  /* w-10 */
+  height: 2.5rem; /* h-10 */
 }
 
 .loading-spinner--lg .spinner {
-  @apply w-16 h-16;
+  width: 4rem;  /* w-16 */
+  height: 4rem; /* h-16 */
 }
 </style>

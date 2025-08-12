@@ -1,5 +1,5 @@
 <template>
-  <GlassCard :class="['border', `border-${color}-500`]">
+  <GlassCard :class="['lg-edge glass-sheen', 'border', `border-${color}-500`]">
     <div class="flex items-start space-x-3">
       <div v-if="icon" class="text-3xl">
         {{ icon }}

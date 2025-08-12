@@ -33,20 +33,21 @@
   --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
   --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
   --shadow-glass: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
-  
-  /* Animation Durations */
-  --duration-fast: 150ms;
-  --duration-normal: 300ms;
-  --duration-slow: 500ms;
-  
-  /* Z-index Scale */
-  --z-dropdown: 10;
-  --z-sticky: 20;
-  --z-fixed: 30;
-  --z-modal-backdrop: 40;
-  --z-modal: 50;
-  --z-popover: 60;
-  --z-tooltip: 70;
+
+  /* Liquid Glass (Tahoe / iOS 26) tokens */
+  --lg-surface-rgb-light: 255, 255, 255;
+  --lg-surface-rgb-dark: 17, 24, 39;         /* gray-900 */
+  --lg-border-light: rgba(255, 255, 255, 0.18);
+  --lg-border-dark: rgba(255, 255, 255, 0.12);
+  --lg-highlight: rgba(255, 255, 255, 0.25);
+  --lg-reflection: linear-gradient(180deg, rgba(255,255,255,0.35) 0%, rgba(255,255,255,0.08) 30%, rgba(255,255,255,0) 100%);
+  --lg-shadow: 0 10px 30px rgba(0,0,0,0.15);
+  --lg-saturate: 1.2;
+  --lg-elev1-blur: 8px;   --lg-elev1-alpha: 0.18;
+  --lg-elev2-blur: 12px;  --lg-elev2-alpha: 0.22;
+  --lg-elev3-blur: 16px;  --lg-elev3-alpha: 0.26;
+  --lg-elev4-blur: 20px;  --lg-elev4-alpha: 0.30;
+  --lg-elev5-blur: 24px;  --lg-elev5-alpha: 0.34;
 }
 
 /* Dark Mode Overrides */
@@ -54,6 +55,7 @@
   --glass-white: rgba(255, 255, 255, 0.1);
   --glass-dark: rgba(0, 0, 0, 0.5);
   --glass-border: rgba(255, 255, 255, 0.1);
+  --lg-saturate: 1.0;
 }
 
 /* ========================================================================
@@ -133,6 +135,75 @@ body {
    Component Styles
    ======================================================================== */
 @layer components {
+  /* Liquid Glass Surface (base) */
+  .lg-surface {
+    position: relative;
+    border-radius: 1rem;
+    background: rgba(var(--lg-surface-rgb-light), var(--lg-elev2-alpha));
+    backdrop-filter: saturate(var(--lg-saturate)) blur(var(--lg-elev2-blur));
+    -webkit-backdrop-filter: saturate(var(--lg-saturate)) blur(var(--lg-elev2-blur));
+    border: 1px solid var(--lg-border-light);
+    box-shadow: var(--lg-shadow);
+    transition: transform 200ms ease, box-shadow 200ms ease, background-color 200ms ease, backdrop-filter 200ms ease;
+  }
+
+  .dark .lg-surface,
+  :root.dark .lg-surface {
+    background: rgba(var(--lg-surface-rgb-dark), var(--lg-elev2-alpha));
+    border-color: var(--lg-border-dark);
+  }
+
+  /* Elevations */
+  .lg-elevation-1 { --lg-blur: var(--lg-elev1-blur); --lg-alpha: var(--lg-elev1-alpha); }
+  .lg-elevation-2 { --lg-blur: var(--lg-elev2-blur); --lg-alpha: var(--lg-elev2-alpha); }
+  .lg-elevation-3 { --lg-blur: var(--lg-elev3-blur); --lg-alpha: var(--lg-elev3-alpha); }
+  .lg-elevation-4 { --lg-blur: var(--lg-elev4-blur); --lg-alpha: var(--lg-elev4-alpha); }
+  .lg-elevation-5 { --lg-blur: var(--lg-elev5-blur); --lg-alpha: var(--lg-elev5-alpha); }
+
+  .lg-surface.lg-elevation-1,
+  .lg-surface.lg-elevation-2,
+  .lg-surface.lg-elevation-3,
+  .lg-surface.lg-elevation-4,
+  .lg-surface.lg-elevation-5 {
+    background: rgba(var(--lg-surface-rgb-light), var(--lg-alpha));
+    backdrop-filter: saturate(var(--lg-saturate)) blur(var(--lg-blur));
+    -webkit-backdrop-filter: saturate(var(--lg-saturate)) blur(var(--lg-blur));
+  }
+
+  .dark .lg-surface.lg-elevation-1,
+  .dark .lg-surface.lg-elevation-2,
+  .dark .lg-surface.lg-elevation-3,
+  .dark .lg-surface.lg-elevation-4,
+  .dark .lg-surface.lg-elevation-5 {
+    background: rgba(var(--lg-surface-rgb-dark), var(--lg-alpha));
+  }
+
+  /* Edge highlight */
+  .lg-edge::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    pointer-events: none;
+    background: linear-gradient(180deg, rgba(255,255,255,0.25), rgba(255,255,255,0.05));
+    mix-blend-mode: overlay;
+  }
+
+  /* Reflection sheen */
+  .lg-reflect::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    pointer-events: none;
+    background: var(--lg-reflection);
+  }
+
+  /* Pressable interactions */
+  .lg-pressable { transform: translateZ(0); }
+  .lg-pressable:hover { transform: translateY(-2px); box-shadow: 0 16px 40px rgba(0,0,0,0.18); }
+  .lg-pressable:active { transform: translateY(0); box-shadow: 0 10px 24px rgba(0,0,0,0.16); }
+
   /* Glass Components */
   .glass {
     background: var(--glass-white);

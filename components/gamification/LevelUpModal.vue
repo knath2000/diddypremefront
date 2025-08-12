@@ -1,11 +1,11 @@
 <template>
   <transition name="fade">
     <div v-if="visible" class="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm">
-      <GlassCard class="relative p-10 w-11/12 max-w-md text-center animate-glow-pulse">
+      <div class="relative p-10 w-11/12 max-w-md text-center animate-glow-pulse lg-surface lg-elevation-4 lg-edge rounded-2xl">
         <h2 class="text-3xl font-bold mb-4 text-white">Level Up!</h2>
         <p class="text-white mb-6">You reached level {{ user.level }} 🎉</p>
         <GlassButton @click="close" class="px-6 py-2">Awesome!</GlassButton>
-      </GlassCard>
+      </div>
     </div>
   </transition>
 </template>

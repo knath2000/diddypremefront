@@ -19,7 +19,7 @@
         <!-- Modal Content -->
         <div
           ref="modalContent"
-          class="relative z-10 w-full max-w-lg p-6 glass-card"
+          class="relative z-10 w-full max-w-lg p-6 rounded-2xl lg-surface lg-elevation-4 lg-edge"
           role="document"
         >
           <slot name="header" :title-id="titleId" />

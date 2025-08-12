@@ -1,5 +1,5 @@
 <template>
-  <footer class="app-footer">
+  <footer class="app-footer lg-surface lg-elevation-1 lg-edge">
     <div class="container mx-auto px-4 py-8">
       <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
         <!-- Brand Section -->
@@ -78,14 +78,10 @@ const legalLinks: Link[] = [
 
 <style scoped>
 .app-footer {
-  background-color: #ffffff;
-  border-top: 1px solid #e5e7eb;
   margin-top: auto;
 }
 @media (prefers-color-scheme: dark) {
   .app-footer {
-    background-color: #1f2937;
-    border-top-color: #374151;
   }
 }
 

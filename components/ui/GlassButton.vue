@@ -1,7 +1,8 @@
 <template>
   <button
     :class="[
-      'glass-btn relative inline-flex items-center justify-center px-5 py-2.5 rounded-full font-semibold focus:outline-none',
+      'glass-btn group relative inline-flex items-center justify-center px-5 py-2.5 rounded-full font-semibold focus:outline-none',
+      'lg-surface lg-elevation-2 lg-edge lg-pressable',
       variant === 'primary' ? 'text-white' : 'text-gray-900 dark:text-white'
     ]"
     @click="$emit('click')"
@@ -21,9 +22,6 @@ const variant = computed(() => props.variant ?? 'primary')
 
 <style scoped>
 .glass-btn {
-  background: var(--glass-white);
-  backdrop-filter: blur(6px);
-  border: 1px solid var(--glass-border);
   position: relative;
   overflow: hidden;
 }

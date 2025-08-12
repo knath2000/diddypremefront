@@ -6,7 +6,7 @@
       <div class="absolute -bottom-40 right-0 w-[420px] h-[420px] rounded-full bg-gradient-to-br from-blue-500/30 to-green-400/30 blur-3xl animate-float" />
 
       <div class="container mx-auto px-4 text-center">
-        <GlassCard class="mx-auto max-w-4xl">
+        <div class="mx-auto max-w-4xl lg-surface lg-elevation-3 lg-edge lg-pressable p-8 rounded-2xl">
           <h1 class="text-4xl lg:text-6xl font-extrabold mb-6 bg-clip-text text-transparent" style="background-image: var(--gradient-primary)">
             Supreme Price Tracker
           </h1>
@@ -25,7 +25,7 @@
             <StatCard title="Updates" value="15m" />
             <StatCard title="Uptime" value="99.9%" />
           </div>
-        </GlassCard>
+        </div>
       </div>
     </section>
 

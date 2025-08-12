@@ -48,7 +48,9 @@ const badgesWithStatus = computed(() => {
     const id = badge.id || badge.title
     const unlocked = typeof user.hasAchievement === 'function'
       ? user.hasAchievement(id)
-      : user.achievements?.includes?.(id)
+      : Array.isArray(user.achievements)
+        ? (user.achievements as any[]).some((a) => (a as any)?.id === id && (a as any)?.progress === 100)
+        : false
 
     const progress = typeof user.getAchievementProgress === 'function'
       ? user.getAchievementProgress(id)
