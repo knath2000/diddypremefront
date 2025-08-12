@@ -122,9 +122,16 @@ const motionEnter = computed(() =>
 
 <style scoped>
 .price-bubble {
-  @apply relative flex items-center justify-center rounded-full shadow-lg;
-  @apply select-none cursor-default bg-blur backdrop-blur-md;
-  @apply transition-all duration-200;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 9999px;
+  box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -4px rgba(0,0,0,0.1);
+  user-select: none;
+  cursor: default;
+  background: rgba(17, 24, 39, 0.35);
+  transition: all 200ms ease;
 }
 
 /* Size variants */

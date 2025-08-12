@@ -86,7 +86,15 @@ const iconComponent = computed(() => {
 
 <style scoped>
 .achievement-badge {
-  @apply flex flex-col items-center justify-center rounded-xl transition-transform duration-300 ease-out p-4 bg-blur backdrop-blur-md select-none;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border-radius: 0.75rem;
+  transition: transform 300ms ease-out;
+  padding: 1rem;
+  user-select: none;
+  background: rgba(17, 24, 39, 0.35);
 }
 
 .achievement-badge--loading {

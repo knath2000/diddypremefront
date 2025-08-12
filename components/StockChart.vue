@@ -1,5 +1,5 @@
 <template>
-  <div class="glass-chart relative bg-blur rounded-2xl p-4">
+  <div class="glass-chart relative rounded-2xl p-4" style="background: rgba(17,24,39,0.35)">
     <div class="absolute inset-0 pointer-events-none bg-gradient-to-br from-white/5 to-transparent rounded-2xl"></div>
     <canvas ref="canvas"></canvas>
   </div>

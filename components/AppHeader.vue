@@ -248,13 +248,19 @@ onUnmounted(() => {
 
 <style scoped>
 .app-header {
-  @apply bg-blur backdrop-blur-md shadow-lg;
-  @apply border-b border-white/10 dark:border-white/10;
-  @apply sticky top-0 z-40;
+  background: rgba(255,255,255,0.65);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -4px rgba(0,0,0,0.1);
+  border-bottom: 1px solid rgba(255,255,255,0.1);
+  position: sticky;
+  top: 0;
+  z-index: 40;
 }
 
 /* Smooth transitions */
 .app-header :deep(*) {
-  @apply transition-colors duration-200;
+  transition-property: color, background-color, border-color, text-decoration-color, fill, stroke;
+  transition-duration: 200ms;
 }
 </style> 
