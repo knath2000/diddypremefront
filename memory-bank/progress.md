@@ -28,10 +28,13 @@
 3.  **Build Gamification Features**: Create the frontend components to support the new gamification system (XP, badges, etc.).
 
 ## Major Accomplishments This Session ✨
-- **Successfully Integrated StockX Data**: Transformed the UI to consume and display real-time, variant-level market data from the backend, including building new pages and chart components.
-- **Resolved Critical Production-Level Bugs**: Systematically debugged and fixed a series of challenging issues that are common in modern web development:
-    -   Fixed **SSR hydration mismatches** by correcting backend CORS policies and frontend data fetching strategies.
-    -   Solved **client-side navigation failures** by managing experimental Nuxt features.
-    -   Addressed **Vite build errors** by handling dependency imports correctly for a universal rendering context.
-- **Stabilized the Application**: Moved the application from a buggy, partially-integrated state to a stable, fully functional baseline ready for future development.
-- **Refined Data Display**: Updated the UI to show the most relevant price (`Lowest Ask`) for a better user experience. 
+### PR Review and Merges (Squash) – 2025-08-11
+- Squash-merged PR #2 (refactor + composables + design tokens) into `main`.
+- Squash-merged PR #1 (ItemCard refactor + TS improvements) into `main` with tested conflict resolutions.
+- Deleted remote feature branches after merge.
+
+### Build and CI Readiness
+- Resolved Tailwind v4 strict-mode issues by replacing `@apply` usages in component-scoped CSS with pure CSS fallbacks in key files: `AppHeader.vue`, `AppFooter.vue`, `LoadingSpinner.vue`, `PriceBubble.vue`, `TrendIndicator.vue`, and `pages/items/[id].vue`.
+- Unified `nuxt.config.ts` to PR #2’s structure (Chart.js transpile; removed invalid `nitro.errorHandler`).
+- Added `focus-trap` to satisfy `@vueuse/integrations` SSR build.
+- Verified production build locally (client + server) from merged code.

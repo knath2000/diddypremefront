@@ -1,6 +1,19 @@
 # Raw Reflection Log
 
 ---
+Date: 2025-08-11
+TaskRef: "PR review, squash merges, and build hardening"
+
+Learnings / Notes:
+- Completed squash merges for PR #2 then PR #1; deleted remote branches.
+- Merge conflict strategy: kept `ItemCard.vue` from PR #1; kept PR #2 config files (`nuxt.config.ts`, `plugins/global-components.ts`, `tsconfig.json`, `package.json`, `pnpm-lock.yaml`).
+- Tailwind v4 strict mode requires avoiding `@apply` in component-scoped CSS; pure CSS replacements are reliable and keep styles consistent.
+- Build reliability improved by removing invalid `nitro.errorHandler` path and adding `focus-trap` for `@vueuse/integrations`.
+
+Outcome:
+- Local prod build (client and server) passes from merged `main`.
+- `main` now contains refactors/composables plus ItemCard TS refactor, with strict-mode-safe styles.
+---
 Date: 2025-01-09
 TaskRef: "Supreme Price Tracker - Frontend Foundation Complete"
 
