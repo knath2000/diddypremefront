@@ -11,7 +11,7 @@
         :unlocked="badge.unlocked"
         :rare="badge.rare"
         :icon="badge.icon"
-        :progress="badge.progress"
+        :progress="Number(badge.progress ?? 0)"
         :show-progress="true"
       />
     </div>
